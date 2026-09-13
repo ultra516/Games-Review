@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ game.name }} - Λεπτομέρειες</title>
+    <!-- Σύνδεση με το υπάρχον CSS σου -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="detail-container">
+        <!-- Κουμπί για να γυρίσει ο χρήστης πίσω -->
+        <a href="/" class="back-link">⬅ Πίσω στην Αρχική</a>
+
+        <div class="game-header">
+            <h1>{{ game.name }}</h1>
+            <div class="genre-list">
+                {% for genre in game.genres %}
+                    <span class="genre-tag">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="game-media-layout">
+            <!-- Μεγάλη κεντρική εικόνα -->
+            <img src="{{ game.background_image if game.background_image else 'https://placeholder.com' }}" alt="{{ game.name }}" class="detail-main-img">
+            
+            <!-- Πλευρικό πάνελ πληροφοριών -->
+            <div class="quick-facts">
+                <h3>Στοιχεία Παιχνιδιού</h3>
+                <p><strong>Ημερομηνία:</strong> {{ game.released if game.released else 'Άγνωστη' }}</p>
+                <p><strong>Εταιρεία (Developer):</strong> 
+                    {% for dev in game.developers %}
+                        {{ dev.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Πλατφόρμες:</strong> 
+                    {% for plat in game.platforms %}
+                        {{ plat.platform.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                
+                {% if game.metacritic %}
+                    <div class="detail-metascore">Metacritic: <span>{{ game.metacritic }}</span></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Αναλυτική Περιγραφή -->
+        <section class="game-description-box">
+            <h2>Σχετικά με το παιχνίδι</h2>
+            <!-- Το |safe χρειάζεται γιατί η RAWG στέλνει έτοιμα HTML tags στην περιγραφή -->
+            <div class="description-text">{{ game.description|safe }}</div>
+        </section>
+
+        <!-- Γκαλερί με Screenshots (αν υπάρχουν) -->
+        {% if screenshots %}
+        <section class="screenshots-section">
+            <h2>Screenshots</h2>
+            <div class="screenshots-layout">
+                {% for shot in screenshots %}
+                    <img src="{{ shot.image }}" alt="Screenshot" class="shot-card">
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+
+</body>
+</html>

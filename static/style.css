@@ -1,0 +1,269 @@
+/* 1. ΓΕΝΙΚΑ STYLES & RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #121214; /* Σκούρο gaming υπόβαθρο */
+    color: #ffffff;
+    padding: 20px;
+}
+
+/* 2. HEADER & ΜΠΑΡΑ ΑΝΑΖΗΤΗΣΗΣ */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #00ff88; /* Neon πράσινο για gaming αισθητική */
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #29292e;
+    border-radius: 8px;
+    background-color: #202024;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-form input:focus {
+    border-color: #00ff88; /* Αλλαγή χρώματος όταν κάνεις κλικ */
+}
+
+.search-form button {
+    padding: 12px 24px;
+    background-color: #00ff88;
+    color: #121214;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-form button:hover {
+    background-color: #00cc6a;
+}
+
+/* 3. ΤΟ ΠΛΕΓΜΑ (GAMES GRID) */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Αυτόματη προσαρμογή στηλών ανάλογα με την οθόνη */
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 4. ΟΙ ΚΑΡΤΕΣ ΤΩΝ ΠΑΙΧΝΙΔΙΩΝ (GAME CARDS) */
+.game-card {
+    background-color: #202024;
+    border-radius: 12px;
+    overflow: hidden; /* Κόβει τις γωνίες της εικόνας που περισσεύουν */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-5px); /* Μικρό ανασήκωμα στο hover */
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2); /* Neon λάμψη */
+}
+
+.game-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* Κάνει την εικόνα να γεμίζει το box χωρίς να παραμορφώνεται */
+}
+
+.game-info {
+    padding: 20px;
+}
+
+.game-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Βάζει αποσιωπητικά (...) αν ο τίτλος είναι πολύ μεγάλος */
+}
+
+.release-date {
+    color: #a8a8b3;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+/* 5. BADGES ΒΑΘΜΟΛΟΓΙΑΣ (METACRITIC) */
+.score-badge {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.meta-score {
+    background-color: #61c114; /* Πράσινο Metacritic στυλ */
+    color: #121214;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.no-score {
+    color: #737380;
+    font-style: italic;
+}
+
+/* Μήνυμα όταν δεν υπάρχουν αποτελέσματα */
+.no-results {
+    grid-column: 1 / -1; /* Πιάνει όλο το πλάτος του grid */
+    text-align: center;
+    color: #a8a8b3;
+    font-size: 1.2rem;
+    margin-top: 40px;
+}
+
+/* --- CSS ΓΙΑ ΤΗ ΣΕΛΙΔΑ ΛΕΠΤΟΜΕΡΕΙΩΝ (details.html) --- */
+.detail-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.back-link {
+    display: inline-block;
+    color: #00ff88;
+    text-decoration: none;
+    font-weight: bold;
+    margin-bottom: 25px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00cc6a;
+}
+
+.game-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+}
+
+.genre-tag {
+    background-color: #29292e;
+    color: #a8a8b3;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.game-media-layout {
+    display: flex;
+    gap: 30px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.detail-main-img {
+    flex: 2;
+    min-width: 350px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #29292e;
+}
+
+.quick-facts {
+    flex: 1;
+    min-width: 280px;
+    background-color: #202024;
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.quick-facts h3 {
+    border-bottom: 2px solid #29292e;
+    padding-bottom: 10px;
+    color: #00ff88;
+}
+
+.detail-metascore {
+    margin-top: auto;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.detail-metascore span {
+    background-color: #61c114;
+    color: #121214;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    margin-left: 10px;
+}
+
+.game-description-box {
+    margin-top: 40px;
+    background-color: #202024;
+    padding: 30px;
+    border-radius: 12px;
+}
+
+.game-description-box h2 {
+    margin-bottom: 20px;
+    color: #00ff88;
+}
+
+.description-text {
+    line-height: 1.7;
+    color: #e1e1e6;
+}
+
+.screenshots-section {
+    margin-top: 40px;
+}
+
+.screenshots-section h2 {
+    margin-bottom: 20px;
+    color: #00ff88;
+}
+
+.screenshots-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 15px;
+}
+
+.shot-card {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.shot-card:hover {
+    transform: scale(1.04);
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Review Hub</title>
+    <!-- Σύνδεση με το CSS σου (βρίσκεται στο static/style.css) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>🎮 Game Review Hub</h1>
+        
+        <!-- Η ΦΟΡΜΑ ΑΝΑΖΗΤΗΣΗΣ -->
+        <form action="/" method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Ψάξε για ένα παιχνίδι... (e.g. Witcher, GTA)" required>
+            <button type="submit">Αναζήτηση</button>
+        </form>
+        
+        <a href="/favorites" style="color: #ffcc00; text-decoration: none; font-weight: bold; font-size: 1.1rem; display: block; margin-top: 10px;">
+        📂 Δείτε τα Αγαπημένα Μου (Favorites)
+        </a>
+
+    </header>
+
+    <main>
+        <div class="games-grid">
+            <!-- LOOP: Επανάληψη για κάθε παιχνίδι στη λίστα games -->
+            {% for game in games %}
+                <div class="game-card">
+                    
+                    <!-- ΕΛΑΦΡΙΑ ΕΙΚΟΝΑ: Χρησιμοποιούμε την background_image αλλά αν δεν υπάρχει βάζουμε σωστό placeholder -->
+                    {% if game.background_image %}
+                        <img src="{{ game.background_image }}" alt="{{ game.name }}" class="game-img" loading="lazy">
+                    {% else %}
+                        <img src="https://placeholder.com" alt="No Image" class="game-img">
+                    {% endif %}
+
+                    <div class="game-info">
+                        <h3>{{ game.name }}</h3>
+                        <p class="release-date">📅 Κυκλοφορία: {{ game.released if game.released else 'Άγνωστη' }}</p>
+                        
+                        <a href="/game/{{ game.id }}" class="details-btn">Δείτε Λεπτομέρειες</a>
+                        <!-- Η ΝΕΑ ΦΟΡΜΑ ΓΙΑ ΤΟ ΚΟΥΜΠΙ ΑΓΑΠΗΜΕΝΩΝ -->
+                        
+                        <form action="/favorite/add" method="POST" style="margin-top: 10px;">
+                            <input type="hidden" name="game_id" value="{{ game.id }}">
+                            <input type="hidden" name="game_name" value="{{ game.name }}">
+                            <input type="hidden" name="game_image" value="{{ game.background_image }}">
+                            <button type="submit" style="background-color: #ffcc00; color: #121214; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">
+                                ⭐ Προσθήκη στα Αγαπημένα
+                            </button>
+                        </form>
+                        <!-- Βαθμολογία Metacritic -->
+                        {% if game.metacritic %}
+                            <div class="score-badge">
+                                Metacritic: <span class="meta-score">{{ game.metacritic }}</span>/100
+                            </div>
+                        {% else %}
+                            <div class="score-badge no-score">Χωρίς Metacritic Score</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% else %}
+                <!-- Εμφανίζεται ΜΟΝΟ αν η λίστα games είναι εντελώς άδεια -->
+                <p class="no-results">Δεν βρέθηκαν παιχνίδια. Κάντε μια αναζήτηση παραπάνω!</p>
+            {% endfor %}
+        </div>
+    </main>
+
+</body>
+</html>
