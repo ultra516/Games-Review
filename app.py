@@ -6,7 +6,7 @@ from model import db  # Κρατάμε το δικό σου όνομα αρχε�
 app = Flask(__name__)
 
 # Ρυθμίσεις Βάσης Δεδομένων
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///games.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///games.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Αρχικοποίηση της βάσης
