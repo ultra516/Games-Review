@@ -17,14 +17,14 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Ρυθμίσεις Βάσης Δεδομένων
-
-database_url = os.getenv('DATABASE_URL', 'sqlite:///games.db')
+database_url = os.environ.get('DATABASE_URL', 'postgresql://postgres.hhelzbmfquwexrrickiq:ultrastudent516%40d@aws-1-eu-west-1.pooler.supabase.com:6543/postgres')
 
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 # Αρχικοποίηση της βάσης
 db.init_app(app)

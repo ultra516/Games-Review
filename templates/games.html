@@ -4,12 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Review Hub</title>
-    <!-- Σύνδεση με το CSS σου (βρίσκεται στο static/style.css) -->
+    <!-- Φορτώνουμε το Bootstrap για να δουλέψει το Navbar -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="bg-dark text-white">
 
-    <header>
+    <!-- 🌐 ΜΠΑΡΑ ΣΥΝΔΕΣΗΣ -->
+    
+    <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; padding: 15px 30px; background-color: #1a1c1e; border-bottom: 2px solid #00ff88; position: absolute; top: 0; left: 0; z-index: 1000;">
+        {% if current_user.is_authenticated %}
+            <span style="color: white; margin-right: 15px;">👋 Καλώς όρισες, <strong style="color: #00ff88;">{{ current_user.username }}</strong>!</span>
+            <a href="{{ url_for('main.show_favorites') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffcc00 !important; font-weight: bold; margin-right: 10px; padding: 5px 0; text-decoration: none !important;">📂 Αγαπημένα</a>
+            <!-- ΑΛΛΑΓΗ: Το Αποσύνδεση έγινε λευκό έντονο κουμπί με γκρίζο περίγραμμα για να ξεχωρίζει -->
+            <a href="{{ url_for('main.logout') }}" class="btn btn-outline-light btn-sm" style="margin-right: 10px; font-weight: bold; color: #fff; border-color: #fff; text-decoration: none !important;">🚪 Αποσύνδεση</a>
+            <!-- ΑΛΛΑΓΗ: Έντονο gaming κόκκινο χρώμα στο κουμπί διαγραφής -->
+            <form action="{{ url_for('main.delete_account') }}" method="POST" onsubmit="return confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τον λογαριασμό σας;');" style="display: inline;">
+                <button type="submit" class="btn btn-sm" style="background: none !important; border: none !important; color: #ff3333 !important; font-weight: bold; padding: 5px 0; text-decoration: none !important;">⚠️ Διαγραφή Λογαριασμού</button>
+            </form>
+        {% else %}
+            <a href="{{ url_for('main.login') }}" class="btn btn-success btn-sm" style="margin-right: 10px; font-weight: bold;">🔑 Σύνδεση</a>
+            <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-sm" style="font-weight: bold;">📝 Εγγραφή</a>
+        {% endif %}
+    </div>
+
+    <!-- ΔΙΟΡΘΩΣΗ: Προσθέτουμε ένα κενό margin-top για να σπρώξουμε τον τίτλο και όλο το site πιο κάτω, ώστε να μην κρύβεται τίποτα -->
+    
+    <header style="margin-top: 100px; text-align: center;">
         <h1>🎮 Game Review Hub</h1>
         
         <!-- Η ΦΟΡΜΑ ΑΝΑΖΗΤΗΣΗΣ -->
@@ -18,9 +39,7 @@
             <button type="submit">Αναζήτηση</button>
         </form>
         
-        <a href="/favorites" style="color: #ffcc00; text-decoration: none; font-weight: bold; font-size: 1.1rem; display: block; margin-top: 10px;">
-        📂 Δείτε τα Αγαπημένα Μου (Favorites)
-        </a>
+        
 
     </header>
 
@@ -30,35 +49,37 @@
             {% for game in games %}
                 <div class="game-card">
                     
-                    <!-- ΕΛΑΦΡΙΑ ΕΙΚΟΝΑ: Χρησιμοποιούμε την background_image αλλά αν δεν υπάρχει βάζουμε σωστό placeholder -->
-                    {% if game.background_image %}
-                        <img src="{{ game.background_image }}" alt="{{ game.name }}" class="game-img" loading="lazy">
+                    <!-- 🖼️ ΕΙΚΟΝΑ: Χρήση του .get() για Dictionaries -->
+                    {% if game.get('background_image') %}
+                        <img src="{{ game.get('background_image') }}" alt="{{ game.get('name', 'Game') }}" class="game-img" loading="lazy">
                     {% else %}
                         <img src="https://placeholder.com" alt="No Image" class="game-img">
                     {% endif %}
 
                     <div class="game-info">
-                        <h3>{{ game.name }}</h3>
-                        <p class="release-date">📅 Κυκλοφορία: {{ game.released if game.released else 'Άγνωστη' }}</p>
+                        <h3>{{ game.get('name', 'Άγνωστος Τίτλος') }}</h3>
+                        <p class="release-date">📅 Κυκλοφορία: {{ game.get('released', 'Άγνωστη') }}</p>
                         
-                        <a href="/game/{{ game.id }}" class="details-btn">Δείτε Λεπτομέρειες</a>
-                        <!-- Η ΝΕΑ ΦΟΡΜΑ ΓΙΑ ΤΟ ΚΟΥΜΠΙ ΑΓΑΠΗΜΕΝΩΝ -->
+                        <!-- 🔍 Σύνδεσμος για Λεπτομέρειες με το σωστό 'id' από το RAWG API -->
+                        <a href="{{ url_for('main.game_details', game_id=game.get('id', '')) }}" style="color: #00ff88; font-weight: bold; text-decoration: none;">🔍 Δείτε Λεπτομέρειες</a>
                         
+                        <!-- 📂 ΦΟΡΜΑ ΓΙΑ ΤΟ ΚΟΥΜΠΙ ΑΓΑΠΗΜΕΝΩΝ (Λειτουργεί με Dictionaries) -->
                         <form action="/favorite/add" method="POST" style="margin-top: 10px;">
-                            <input type="hidden" name="game_id" value="{{ game.id }}">
-                            <input type="hidden" name="game_name" value="{{ game.name }}">
-                            <input type="hidden" name="game_image" value="{{ game.background_image }}">
+                            <input type="hidden" name="game_id" value="{{ game.get('id', '') }}">
+                            <input type="hidden" name="game_name" value="{{ game.get('name', '') }}">
+                            <input type="hidden" name="game_image" value="{{ game.get('background_image', '') }}">
                             <button type="submit" style="background-color: #ffcc00; color: #121214; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">
                                 ⭐ Προσθήκη στα Αγαπημένα
                             </button>
                         </form>
-                        <!-- Βαθμολογία Metacritic -->
-                        {% if game.metacritic %}
-                            <div class="score-badge">
-                                Metacritic: <span class="meta-score">{{ game.metacritic }}</span>/100
+
+                        <!-- 📊 Βαθμολογία Metacritic -->
+                        {% if game.get('metacritic') %}
+                            <div class="score-badge" style="margin-top: 15px;">
+                                Metacritic: <span class="meta-score">{{ game.get('metacritic') }}</span>/100
                             </div>
                         {% else %}
-                            <div class="score-badge no-score">Χωρίς Metacritic Score</div>
+                            <div class="score-badge no-score" style="margin-top: 15px;">Χωρίς Metacritic Score</div>
                         {% endif %}
                     </div>
 
