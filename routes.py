@@ -42,14 +42,17 @@ def game_details(game_id):
 
 @main.route('/favorite/add', methods=['POST'])
 def add_favorite():
+    if not current_user.is_authenticated:
+        flash('Πρέπει να είστε συνδεδεμένος για να προσθέσετε παιχνίδια στα αγαπημένα σας.', 'warning')
+        return redirect(url_for('main.login'))
     game_id = request.form.get('game_id')
     game_name = request.form.get('game_name')
     game_image = request.form.get('game_image')
 
     # Έλεγχος αν υπάρχει ήδη στα αγαπημένα για να μην διπλογραφτεί
-    exists = FavoriteGame.query.filter_by(rawg_id=game_id).first()
+    exists = FavoriteGame.query.filter_by(rawg_id=game_id, user_id=current_user.id).first()
     if not exists:
-        new_favorite = FavoriteGame(rawg_id=game_id, name=game_name, image=game_image)
+        new_favorite = FavoriteGame(rawg_id=game_id, name=game_name, image=game_image, user_id=current_user.id)
         db.session.add(new_favorite)
         db.session.commit()  # Αποθήκευση στη βάση δεδομένων
 
