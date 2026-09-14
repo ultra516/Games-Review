@@ -1,9 +1,20 @@
 import os
 
 from flask import Flask
-from model import db  # Κρατάμε το δικό σου όνομα αρχείου όπως είναι!
+from flask_login import LoginManager
+from model import User, db  # Κρατάμε το δικό σου όνομα αρχείου όπως είναι!
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = 'your-secret-key'  # Προσθέστε ένα secret key
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'main.login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # Ρυθμίσεις Βάσης Δεδομένων
 
