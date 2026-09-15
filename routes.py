@@ -13,7 +13,10 @@ def home():
 
     search_query = request.args.get('search')
     games_data = []
-
+    favorite_ids = []
+    if current_user.is_authenticated:
+        favs = FavoriteGame.query.filter_by(user_id=current_user.id).all()
+        favorite_ids = [str(fav.rawg_id) for fav in favs]  # Μετατροπή σε string για σύγκριση
     try:
         if search_query:
             response = requests.get(f'https://api.rawg.io/api/games?search={search_query}&key={API_KEY}', timeout=3)
@@ -25,9 +28,9 @@ def home():
     except requests.RequestException:
         games_data = []
 
-    return render_template('games.html', games=games_data)
+    return render_template('games.html', games=games_data,favorite_ids=favorite_ids)
 
-@main.route('/game/<int:game_id>')
+@main.route('/game/<game_id>')
 def game_details(game_id):
     detail_url = f'https://api.rawg.io/api/games/{game_id}?key={API_KEY}'
     detail_response = requests.get(detail_url)
@@ -38,12 +41,22 @@ def game_details(game_id):
     screenshots_response = requests.get(screenshots_url)
     screenshots = screenshots_response.json().get('results', [])
 
-    return render_template('details.html', game=game_data, screenshots=screenshots)
+    is_favorite = False
+    if current_user.is_authenticated:
+        try:
+            safe_id = str(game_id)  # Προσπαθούμε να μετατρέψουμε το game_id σε string
+            exists = FavoriteGame.query.filter_by(rawg_id=game_id, user_id=current_user.id).first()
+            if exists:
+                is_favorite = True
+        except (ValueError, TypeError):
+            is_favorite = False  # Αν το game_id δεν είναι έγκυρο ακέραιο, αγνοούμε το λάθος
+            
+    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite)
 
 @main.route('/favorite/add', methods=['POST'])
 def add_favorite():
     if not current_user.is_authenticated:
-        flash('Πρέπει να είστε συνδεδεμένος για να προσθέσετε παιχνίδια στα αγαπημένα σας.', 'warning')
+        
         return redirect(url_for('main.login'))
     game_id = request.form.get('game_id')
     game_name = request.form.get('game_name')
@@ -55,14 +68,18 @@ def add_favorite():
         new_favorite = FavoriteGame(rawg_id=game_id, name=game_name, image=game_image, user_id=current_user.id)
         db.session.add(new_favorite)
         db.session.commit()  # Αποθήκευση στη βάση δεδομένων
-
+        flash(f'Το παιχνίδι "{game_name}" προστέθηκε με επιτυχία στα αγαπημένα σας!', 'success')
+    else:
+        flash(f'Το παιχνίδι "{game_name}" υπάρχει ήδη στα αγαπημένα σας.', 'info')
     return redirect(url_for('main.home'))
 
 # 2. READ: Εμφάνιση όλων των Αγαπημένων παιχνιδιών
 @main.route('/favorites')
 def show_favorites():
-    # Παίρνουμε όλα τα παιχνίδια από τη βάση δεδομένων
-    fav_games = FavoriteGame.query.all()
+    if not current_user.is_authenticated:
+        flash('Πρέπει να είστε συνδεδεμένος για να δείτε τα αγαπημένα σας παιχνίδια.', 'warning')
+        return redirect(url_for('main.login'))
+    fav_games = FavoriteGame.query.filter_by(user_id=current_user.id).all()
     return render_template('favorites.html', favorite_games=fav_games)
 
 @main.route('/favorite/delete/<int:fav_id>', methods=['POST'])
@@ -109,7 +126,7 @@ def login():
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            flash(f'Καλώς ήρθες, {user.username}!', 'success')
+            
             return redirect(url_for('main.home'))
 
     return render_template('login.html')
