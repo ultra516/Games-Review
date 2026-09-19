@@ -12,19 +12,21 @@
 
     <!-- 🌐 ΜΠΑΡΑ ΣΥΝΔΕΣΗΣ -->
     
-    <div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; padding: 15px 30px; background-color: #1a1c1e; border-bottom: 2px solid #00ff88; position: absolute; top: 0; left: 0; z-index: 1000;">
+    <div style="width: 100%; display: flex; align-items: center; padding: 15px 30px; background-color: #1a1c1e; border-bottom: 2px solid #00ff88; position: absolute; top: 0; left: 0; z-index: 1000;">
         {% if current_user.is_authenticated %}
-            <span style="color: white; margin-right: 15px;">👋 Καλώς όρισες, <strong style="color: #00ff88;">{{ current_user.username }}</strong>!</span>
-            <a href="{{ url_for('main.show_favorites') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffcc00 !important; font-weight: bold; margin-right: 10px; padding: 5px 0; text-decoration: none !important;">📂 Αγαπημένα</a>
-            <!-- ΑΛΛΑΓΗ: Το Αποσύνδεση έγινε λευκό έντονο κουμπί με γκρίζο περίγραμμα για να ξεχωρίζει -->
-            <a href="{{ url_for('main.logout') }}" class="btn btn-outline-light btn-sm" style="margin-right: 10px; font-weight: bold; color: #fff; border-color: #fff; text-decoration: none !important;">🚪 Αποσύνδεση</a>
-            <!-- ΑΛΛΑΓΗ: Έντονο gaming κόκκινο χρώμα στο κουμπί διαγραφής -->
-            <form action="{{ url_for('main.delete_account') }}" method="POST" onsubmit="return confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τον λογαριασμό σας;');" style="display: inline;">
-                <button type="submit" class="btn btn-sm" style="background: none !important; border: none !important; color: #ff3333 !important; font-weight: bold; padding: 5px 0; text-decoration: none !important;">⚠️ Διαγραφή Λογαριασμού</button>
-            </form>
+            <span style="color: white;"> Καλώς όρισες, <strong style="color: #00ff88;">{{ current_user.username }}</strong>!</span>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                <a href="{{ url_for('main.show_favorites') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffcc00 !important; font-weight: bold; padding: 5px 10px; text-decoration: none !important; display: inline-flex; align-items: center;"> Αγαπημένα</a>
+                <a href="{{ url_for('main.logout') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffffff !important; font-weight: bold; padding: 5px 10px; text-decoration: none !important; display: inline-flex; align-items: center;"> Αποσύνδεση</a>
+                <form action="{{ url_for('main.delete_account') }}" method="POST" onsubmit="return confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τον λογαριασμό σας;');" style="display: inline-flex; margin: 0; align-items: center;">
+                    <button type="submit" class="btn btn-sm" style="background: none !important; border: none !important; color: #ff3333 !important; font-weight: bold; padding: 5px 10px; text-decoration: none !important; display: inline-flex; align-items: center;"> Διαγραφή Λογαριασμού</button>
+                </form>
+            </div>
         {% else %}
-            <a href="{{ url_for('main.login') }}" class="btn btn-success btn-sm" style="margin-right: 10px; font-weight: bold;">🔑 Σύνδεση</a>
-            <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-sm" style="font-weight: bold;">📝 Εγγραφή</a>
+            <div style="margin-left: auto; display: flex;"> 
+                <a href="{{ url_for('main.login') }}" class="btn btn-success btn-sm" style="background: none !important; border: none !important; color: #00ff88 !important; font-weight: bold; margin-right: 15px; padding: 5px 0; text-decoration: none !important;"> Σύνδεση</a>
+                <a href="{{ url_for('main.register') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffffff !important; font-weight: bold; padding: 5px 0; text-decoration: none !important;"> Εγγραφή</a>
+            </div>
         {% endif %}
     </div>
         <!-- ΕΜΦΑΝΙΣΗ FLASH ΜΗΝΥΜΑΤΩΝ (ALERT NOTES) -->
@@ -86,7 +88,7 @@
                         <p class="release-date">📅 Κυκλοφορία: {{ game.get('released', 'Άγνωστη') }}</p>
                         
                         <!-- 🔍 Σύνδεσμος για Λεπτομέρειες με το σωστό 'id' από το RAWG API -->
-                        <a href="{{ url_for('main.game_details', game_id=game.get('id', '')) }}" style="color: #00ff88; font-weight: bold; text-decoration: none;">🔍 Δείτε Λεπτομέρειες</a>
+                        <a href="{{ url_for('main.game_details', game_id=game.get('id', '')) }}" style="color: #00ff88; font-weight: bold; text-decoration: none;"> Δείτε Λεπτομέρειες</a>
                         
                         <!-- 📂 ΦΟΡΜΑ ΓΙΑ ΤΟ ΚΟΥΜΠΙ ΑΓΑΠΗΜΕΝΩΝ (Λειτουργεί με Dictionaries) -->
                          {% if current_user.is_authenticated %}

@@ -27,7 +27,7 @@
                         
                         <div style="display: flex; gap: 10px; margin-top: 15px;">
                             <!-- Σύνδεσμος για τις λεπτομέρειες από το API -->
-                            <a href="/game/{{ fav.rawg_id }}" class="details-btn" style="flex: 1; text-align: center; color: #00ff88; text-decoration: none; font-weight: bold;">Λεπτομέρειες</a>
+                            <a href="/game/{{ fav.rawg_id }}" class="details-btn" style="flex: 1; text-align: center; color: #00ff88; text-decoration: none; font-weight: bold;"> Λεπτομέρειες</a>
                             
                             <!-- Κουμπί για Διαγραφή (Delete) από τη βάση δεδομένων -->
                             <form action="/favorite/delete/{{ fav.id }}" method="POST" style="flex: 1;">
