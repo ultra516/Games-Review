@@ -268,3 +268,299 @@ header h1 {
     transform: scale(1.04);
 }
 
+/* 6. ΜΠΑΡΑ ΣΥΝΔΕΣΗΣ (NAVBAR STYLES) */
+.hub-navbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #1a1c1e;
+    border-bottom: 2px solid #00ff88;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar-right-group {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-hub-green {
+    background: none !important;
+    border: none !important;
+    color: #00ff88 !important;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-hub-yellow {
+    background: none !important;
+    border: none !important;
+    color: #ffcc00 !important;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-hub-white {
+    background: none !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-hub-red {
+    background: none !important;
+    border: none !important;
+    color: #ff3333 !important;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.navbar-form {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* 📝 ΚΕΙΜΕΝΟ ΚΑΛΩΣΟΡΙΣΜΑΤΟΣ */
+.navbar-welcome-text {
+    color: #ffffff;
+}
+
+/* 🟢 HIGHLIGHT ONΟΜΑΤΟΣ ΧΡΗΣΤΗ */
+.navbar-username-highlight {
+    color: #00ff88;
+}
+
+
+/* 7. ΦΟΡΜΕΣ ΣΥΝΔΕΣΗΣ & ΕΓΓΡΑΦΗΣ (LOGIN & REGISTER) */
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.auth-container {
+    background: #1a1c1e;
+    padding: 30px;
+    border-radius: 12px;
+    border: 2px solid #00ff88;
+    width: 100%;
+    max-width: 360px;
+    margin: 20px auto;
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00ff88;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #333;
+    background-color: #121214;
+    color: white;
+    border-radius: 6px;
+    box-sizing: border-box;
+    outline: none;
+    font-size: 1rem;
+}
+
+.auth-input:focus {
+    border-color: #00ff88;
+}
+
+.btn-auth-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #00ff88;
+    color: #121214;
+    border: none;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-auth-submit:hover {
+    background-color: #00cc66;
+}
+
+.auth-link-box {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95rem;
+}
+
+.auth-link-box a {
+    color: #ffcc00;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-link-box a:hover {
+    text-decoration: underline;
+}
+
+/* 8. FLASH ΜΗΝΥΜΑΤΑ (ALERTS) */
+.flash-container {
+    width: 80%;
+    margin: 90px auto 10px auto;
+    text-align: center;
+    position: relative;
+    z-index: 999;
+}
+
+.flash-msg {
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.flash-success { background-color: #00ff88; color: #000000; border: 1px solid #00cc66; }
+.flash-warning { background-color: #ffcc00; color: #000000; border: 1px solid #ccaa00; }
+.flash-info    { background-color: #17a2b8; color: #ffffff; border: 1px solid #117a8b; }
+
+/* 9. ΔΙΟΡΘΩΣΕΙΣ HEADER ΚΑΙ LINKS ΣΤΗΝ ΑΡΧΙΚΗ */
+.main-header {
+    margin-top: 30px;
+    text-align: center;
+    width: 100%;
+}
+
+.game-card-link {
+    color: #00ff88;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.game-card-link:hover {
+    text-decoration: underline;
+}
+
+/* 10. ΚΟΥΜΠΙΑ & ΕΝΔΕΙΞΕΙΣ ΑΓΑΠΗΜΕΝΩΝ ΣΤΙΣ ΚΑΡΤΕΣ */
+.fav-status-text {
+    color: #00ff88;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.btn-card-fav-auth {
+    background-color: #ffcc00;
+    color: #121214;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-card-fav-auth:hover {
+    background-color: #e6b800;
+}
+
+.btn-card-fav-unauth {
+    background: none !important;
+    border: none !important;
+    color: #ffcc00 !important;
+    padding: 5px 0;
+    text-decoration: none !important;
+    width: 100%;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* 11. METACRITIC WRAPPER */
+.card-score-box {
+    margin-top: 15px;
+}
+
+/* 12. ΣΤΥΛ ΓΙΑ ΤΗ ΣΕΛΙΔΑ ΑΓΑΠΗΜΕΝΩΝ (FAVORITES PAGE) */
+.fav-card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-fav-details {
+    flex: 1;
+    text-align: center;
+    color: #00ff88;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-fav-details:hover {
+    text-decoration: underline;
+}
+
+.fav-delete-form {
+    flex: 1;
+}
+
+.btn-fav-delete {
+    width: 100%;
+    background-color: #ff3333;
+    color: white;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-fav-delete:hover {
+    background-color: #cc2222;
+}
+
+/* 13. ΣΤΥΛ ΓΙΑ ΤΗ ΣΕΛΙΔΑ ΛΕΠΤΟΜΕΡΕΙΩΝ (DETAILS PAGE ADDITIONS) */
+.details-fav-status {
+    color: #00ff88;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.details-fav-form {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.btn-details-fav {
+    background: none !important;
+    border: none !important;
+    color: #ffcc00 !important;
+    font-weight: bold;
+    padding: 5px 0;
+    text-decoration: none !important;
+}

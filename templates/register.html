@@ -2,35 +2,33 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Εγγραφή Νέου Χρήστη</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #121214; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .form-container { background: #1a1c1e; padding: 30px; border-radius: 12px; border: 2px solid #00ff88; max-width: 300px; width: 100%; }
-        h2 { text-align: center; margin-bottom: 20px; color: #00ff88; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #333; background-color: #121214; color: white; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #00ff88; color: #121214; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        button:hover { background-color: #00cc66; }
-        .link { text-align: center; margin-top: 15px; }
-        .link a { color: #ffcc00; text-decoration: none; font-weight: bold;}
-    </style>
+    <link rel="stylesheet" href="https://jsdelivr.net">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="form-container">
+<body class="auth-body bg-dark text-white">
+    
+    <!-- 📦 ΚΕΝΤΡΙΚΟ ΚΟΥΤΙ ΕΓΓΡΑΦΗΣ -->
+    <div class="auth-container">
         <h2>Δημιουργία Λογαριασμού</h2>
         
+        <!-- ΕΜΦΑΝΙΣΗ ΣΦΑΛΜΑΤΩΝ-->
         {% if error %}
-            <div style="color: #ff4d4d; text-align: center; margin-bottom: 15px; font-weight: bold;">
+            <div class="text-danger fw-bold text-center mb-3">
                 {{ error }}
             </div>
         {% endif %}
 
-        <form action="/register" method="POST">
-            <input type="text" name="username" placeholder="Όνομα Χρήστη" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Κωδικός Πρόσβασης" required>
-            <button type="submit">Εγγραφή</button>
+        <form action="{{ url_for('main.register') }}" method="POST">
+            <input type="text" name="username" class="auth-input" placeholder="Όνομα Χρήστη" required>
+            <input type="email" name="email" class="auth-input" placeholder="Email" required>
+            <input type="password" name="password" class="auth-input" placeholder="Κωδικός Πρόσβασης" required>
+            <button type="submit" class="btn-auth-submit">Εγγραφή</button>
         </form>
-        <div class="link">Έχετε ήδη λογαριασμό; <a href="/login">Σύνδεση εδώ</a></div>
+        <div class="auth-link-box">
+           Έχετε ήδη λογαριασμό; <a href="{{ url_for('main.login') }}">Σύνδεση εδώ</a>
+        </div>
     </div>
 </body>
 </html>

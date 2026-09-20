@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ game.name }} - Λεπτομέρειες</title>
-    <!-- Σύνδεση με το υπάρχον CSS σου -->
+    <!-- Σύνδεση με το υπάρχον CSS -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -20,19 +21,20 @@
                     <span class="genre-tag">{{ genre.name }}</span>
                 {% endfor %}
             </div>
+            
             {% if current_user.is_authenticated %}
                 {% if is_favorite %}
                     <!-- Αν το παιχνίδι είναι ήδη στα αγαπημένα -->
-                    <p style="color: #00ff88; font-weight: bold; margin-top: 15px; margin-bottom: 20px;">
+                    <p class="details-fav-status">
                         ✅ Αυτό το παιχνίδι είναι στη λίστα σου!
                     </p>
                 {% else %}
                 <!-- Αν ΔΕΝ είναι στα αγαπημένα, δείξε το κουμπί προσθήκης -->
-                    <form action="/favorite/add" method="POST" style="margin-top: 15px; margin-bottom: 20px;">
+                    <form action="{{ url_for('main.add_favorite') }}" method="POST" class="details-fav-form">
                         <input type="hidden" name="game_id" value="{{ game.id }}">
                         <input type="hidden" name="game_name" value="{{ game.name }}">
                         <input type="hidden" name="game_image" value="{{ game.background_image }}">
-                        <button type="submit" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffcc00 !important; font-weight: bold; padding: 5px 0; text-decoration: none !important;">
+                        <button type="submit" class="btn btn-sm btn-details-fav">
                             ⭐ Προσθήκη στα Αγαπημένα
                         </button>
                     </form>

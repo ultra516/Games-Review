@@ -12,41 +12,39 @@
 
     <!-- 🌐 ΜΠΑΡΑ ΣΥΝΔΕΣΗΣ -->
     
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 30px; background-color: #1a1c1e; border-bottom: 2px solid #00ff88; position: absolute; top: 0; left: 0; z-index: 1000;">
+    <div class="hub-navbar">
+        
         {% if current_user.is_authenticated %}
-            <span style="color: white;"> Καλώς όρισες, <strong style="color: #00ff88;">{{ current_user.username }}</strong>!</span>
-            <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
-                <a href="{{ url_for('main.show_favorites') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffcc00 !important; font-weight: bold; padding: 5px 10px; text-decoration: none !important; display: inline-flex; align-items: center;"> Αγαπημένα</a>
-                <a href="{{ url_for('main.logout') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffffff !important; font-weight: bold; padding: 5px 10px; text-decoration: none !important; display: inline-flex; align-items: center;"> Αποσύνδεση</a>
-                <form action="{{ url_for('main.delete_account') }}" method="POST" onsubmit="return confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τον λογαριασμό σας;');" style="display: inline-flex; margin: 0; align-items: center;">
-                    <button type="submit" class="btn btn-sm" style="background: none !important; border: none !important; color: #ff3333 !important; font-weight: bold; padding: 5px 10px; text-decoration: none !important; display: inline-flex; align-items: center;"> Διαγραφή Λογαριασμού</button>
+            <span class="navbar-welcome-text"> Καλώς όρισες, <strong class="navbar-username-highlight">{{ current_user.username }}</strong>!</span>
+            
+            <div class="navbar-right-group">
+                <a href="{{ url_for('main.show_favorites') }}" class="btn btn-sm btn-hub-yellow"> Αγαπημένα</a>
+                <a href="{{ url_for('main.logout') }}" class="btn btn-sm btn-hub-white"> Αποσύνδεση</a>
+                <form action="{{ url_for('main.delete_account') }}" method="POST" onsubmit="return confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τον λογαριασμό σας;');" class="navbar-form">
+                    <button type="submit" class="btn btn-sm btn-hub-red"> Διαγραφή Λογαριασμού</button>
                 </form>
             </div>
+        
         {% else %}
-            <div style="margin-left: auto; display: flex;"> 
-                <a href="{{ url_for('main.login') }}" class="btn btn-success btn-sm" style="background: none !important; border: none !important; color: #00ff88 !important; font-weight: bold; margin-right: 15px; padding: 5px 0; text-decoration: none !important;"> Σύνδεση</a>
-                <a href="{{ url_for('main.register') }}" class="btn btn-sm" style="background: none !important; border: none !important; color: #ffffff !important; font-weight: bold; padding: 5px 0; text-decoration: none !important;"> Εγγραφή</a>
+            <div class="navbar-right-group"> 
+                <a href="{{ url_for('main.login') }}" class="btn btn-sm btn-hub-green"> Σύνδεση</a>
+                <a href="{{ url_for('main.register') }}" class="btn btn-sm btn-hub-white"> Εγγραφή</a>
             </div>
         {% endif %}
+    
     </div>
         <!-- ΕΜΦΑΝΙΣΗ FLASH ΜΗΝΥΜΑΤΩΝ (ALERT NOTES) -->
         
-    <div style="width: 80%; margin: 90px auto 10px auto; text-align: center; position: relative; z-index: 999;">
+    <div class="flash-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     {% if category == 'success' %}
-                        <div style="background-color: #00ff88; color: #000000; padding: 12px; border-radius: 6px; font-weight: bold; margin-bottom: 10px; border: 1px solid #00cc66;">
-                            {{ message }}
-                        </div>
+                        <div class="flash-msg flash-success">{{ message }}</div>
                     {% elif category == 'warning' %}
-                        <div style="background-color: #ffcc00; color: #000000; padding: 12px; border-radius: 6px; font-weight: bold; margin-bottom: 10px; border: 1px solid #ccaa00;">
-                            {{ message }}
-                        </div>
+                        <div class="flash-msg flash-warning">{{ message }}</div>
                     {% else %}
-                        <div style="background-color: #17a2b8; color: #ffffff; padding: 12px; border-radius: 6px; font-weight: bold; margin-bottom: 10px; border: 1px solid #117a8b;">
-                            {{ message }}
-                        </div>
+                        <div class="flash-msg flash-info">{{ message }}</div>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -54,9 +52,8 @@
     </div>
 
 
-    <!-- ΔΙΟΡΘΩΣΗ: Προσθέτουμε ένα κενό margin-top για να σπρώξουμε τον τίτλο και όλο το site πιο κάτω, ώστε να μην κρύβεται τίποτα -->
-    
-        <header style="margin-top: 30px; text-align: center; width: 100%;">
+    <!-- HEADER -->
+    <header class="main-header">
 
         <h1>🎮 Game Review Hub</h1>
         
@@ -88,43 +85,38 @@
                         <p class="release-date">📅 Κυκλοφορία: {{ game.get('released', 'Άγνωστη') }}</p>
                         
                         <!-- 🔍 Σύνδεσμος για Λεπτομέρειες με το σωστό 'id' από το RAWG API -->
-                        <a href="{{ url_for('main.game_details', game_id=game.get('id', '')) }}" style="color: #00ff88; font-weight: bold; text-decoration: none;"> Δείτε Λεπτομέρειες</a>
+                        <a href="{{ url_for('main.game_details', game_id=game.get('id', '')) }}" class="game-card-link"> Δείτε Λεπτομέρειες</a>
                         
                         <!-- 📂 ΦΟΡΜΑ ΓΙΑ ΤΟ ΚΟΥΜΠΙ ΑΓΑΠΗΜΕΝΩΝ (Λειτουργεί με Dictionaries) -->
                          {% if current_user.is_authenticated %}
                             <!-- Ελέγχουμε αν το ID του παιχνιδιού είναι ήδη στη λίστα των αγαπημένων -->
                             {% if game.get('id')|string in favorite_ids %}
-                                <p style="color: #00ff88; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: center;">
-                                    ✅ Στη λίστα σου!
-                                </p>
+                                <p class="fav-status-text">✅ Στη λίστα σου!</p>
                             {% else %}
-                                <form action="/favorite/add" method="POST" style="margin-top: 10px;">
+                                <form action="/favorite/add" method="POST">
                                     <input type="hidden" name="game_id" value="{{ game.get('id', '') }}">
                                     <input type="hidden" name="game_name" value="{{ game.get('name', '') }}">
                                     <input type="hidden" name="game_image" value="{{ game.get('background_image', '') }}">
-                                    <button type="submit" style="background-color: #ffcc00; color: #121214; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">
-                                        ⭐ Προσθήκη στα Αγαπημένα
-                                    </button>
+                                    <button type="submit" class="btn-card-fav-auth">⭐ Προσθήκη στα Αγαπημένα</button>
                                 </form>
                             {% endif %}
                         {% else %}
                             <!-- Αν ο χρήστης δεν είναι συνδεδεμένος, δείξε το κλασικό κουμπί (που τον πάει στο login) -->
-                            <form action="/favorite/add" method="POST" style="margin-top: 10px;">
+                            <form action="/favorite/add" method="POST">
                                 <input type="hidden" name="game_id" value="{{ game.get('id', '') }}">
                                 <input type="hidden" name="game_name" value="{{ game.get('name', '') }}">
                                 <input type="hidden" name="game_image" value="{{ game.get('background_image', '') }}">
-                                <button type="submit" class="btn w-100 fw-bold" style="background: none !important; border: none !important; color: #ffcc00 !important; padding: 5px 0; text-decoration: none !important;">
-                                    ⭐ Στα Αγαπημένα
-                                </button>
+                                <button type="submit" class="btn btn-card-fav-unauth">⭐ Στα Αγαπημένα</button>
                             </form>
                         {% endif %}
+                        
                         <!-- 📊 Βαθμολογία Metacritic -->
                         {% if game.get('metacritic') %}
-                            <div class="score-badge" style="margin-top: 15px;">
+                            <div class="score-badge card-score-box">
                                 Metacritic: <span class="meta-score">{{ game.get('metacritic') }}</span>/100
                             </div>
                         {% else %}
-                            <div class="score-badge no-score" style="margin-top: 15px;">Χωρίς Metacritic Score</div>
+                            <div class="score-badge no-score card-score-box">Χωρίς Metacritic Score</div>
                         {% endif %}
                     </div>
 
