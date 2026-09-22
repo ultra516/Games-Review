@@ -10,7 +10,22 @@
 </head>
 <body>
 
+    
+
     <div class="detail-container">
+         <!-- ΕΜΦΑΝΙΣΗ ΜΗΝΥΜΑΤΩΝ FLASH (SUCCESS / DANGER) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages-container mb-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show fw-bold shadow-sm" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
         <!-- Κουμπί για να γυρίσει ο χρήστης πίσω -->
         <a href="/" class="back-link">⬅ Πίσω στην Αρχική</a>
 
@@ -28,6 +43,25 @@
                     <p class="details-fav-status">
                         ✅ Αυτό το παιχνίδι είναι στη λίστα σου!
                     </p>
+
+                    <!--ΦΟΡΜΑ ΟΡΙΣΜΟΥ ΕΥΡΟΥΣ ΤΙΜΗΣ (PRICE ALERT) -->
+                    <div class="price-alert-box shadow-sm">
+                        <form action="{{ url_for('main.set_price_alert') }}" method="POST">
+                            <input type="hidden" name="game_id" value="{{ game.id }}">
+                            <label for="target_price">🔔 Ειδοποίηση όταν η τιμή πέσει κάτω από:</label>
+                            <div class="price-alert-input-group">
+                                <input type="number" 
+                                       step="0.01" 
+                                       name="target_price" 
+                                       id="target_price" 
+                                       class="form-control form-control-sm price-alert-input" 
+                                       placeholder="π.χ. 19.99" 
+                                       value="{{ current_alert_price if current_alert_price is not none else '' }}"
+                                       required>
+                                <button type="submit" class="btn btn-sm btn-price-alert">Ορισμός 🎯</button>
+                            </div>
+                        </form>
+                    </div>
                 {% else %}
                 <!-- Αν ΔΕΝ είναι στα αγαπημένα, δείξε το κουμπί προσθήκης -->
                     <form action="{{ url_for('main.add_favorite') }}" method="POST" class="details-fav-form">

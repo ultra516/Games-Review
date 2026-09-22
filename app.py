@@ -3,8 +3,10 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from model import User, db  # Κρατάμε το δικό σου όνομα αρχείου όπως είναι!
+from flask_migrate import Migrate
 
 app = Flask(__name__)
+migrate = Migrate(app, db)
 
 app.config['SECRET_KEY'] = 'your-secret-key'  # Προσθέστε ένα secret key
 login_manager = LoginManager()

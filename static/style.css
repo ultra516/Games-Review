@@ -642,3 +642,52 @@ header h1 {
     vertical-align: middle;
     border-radius: 4px;
 }
+
+/* 16. ΦΟΡΜΑ ΕΙΔΟΠΟΙΗΣΗΣ ΤΙΜΗΣ (PRICE ALERT FORM) */
+.price-alert-box {
+    margin-top: 15px;
+    background-color: #1a1c1e;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed #ffcc00; /* Κίτρινο διακεκομμένο περίγραμμα για ειδοποίηση */
+    max-width: 350px;
+}
+
+.price-alert-box label {
+    font-size: 0.9rem;
+    color: #ffcc00;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.price-alert-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.price-alert-input {
+    background-color: #121214 !important;
+    border: 1px solid #737380 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    text-align: center;
+}
+
+.price-alert-input:focus {
+    border-color: #ffcc00 !important;
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.4) !important;
+}
+
+.btn-price-alert {
+    background-color: #ffcc00 !important;
+    color: #121214 !important;
+    font-weight: bold;
+    border: none !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-price-alert:hover {
+    background-color: #e6b800 !important;
+    box-shadow: 0 0 8px rgba(255, 204, 0, 0.5);
+}

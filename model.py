@@ -18,5 +18,5 @@ class FavoriteGame(db.Model):
     rawg_id = db.Column(db.String(50), nullable=False)
     name = db.Column(db.String(100), nullable=False) # Όνομα παιχνιδιού
     image = db.Column(db.String(255)) # Link εικόνας
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Σχέση με τον χρήστη
+    target_price = db.Column(db.Float, nullable=True, default=None) # Στόχος τιμής για ειδοποίηση

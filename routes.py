@@ -44,12 +44,15 @@ def game_details(game_id):
     screenshots = screenshots_response.json().get('results', [])
 
     is_favorite = False
+    current_alert_price = None
+
     if current_user.is_authenticated:
         try:
             safe_id = str(game_id)  # Προσπαθούμε να μετατρέψουμε το game_id σε string
             exists = FavoriteGame.query.filter_by(rawg_id=safe_id, user_id=current_user.id).first()
             if exists:
                 is_favorite = True
+                current_alert_price = exists.target_price  # Παίρνουμε την τρέχουσα τιμή ειδοποίησης
         except (ValueError, TypeError):
             pass  # Αν το game_id δεν είναι έγκυρο ακέραιο, αγνοούμε το λάθος
 
@@ -146,7 +149,7 @@ def game_details(game_id):
    
 
    
-    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite, deals=deals, store_names=store_names)
+    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite, deals=deals, store_names=store_names, current_alert_price=current_alert_price)
 
     
 
@@ -245,3 +248,22 @@ def delete_account():
     logout_user()  # Αποσύνδεση του χρήστη μετά τη διαγραφή
     flash('Ο λογαριασμός σας και όλα τα δεδομένα σας διαγράφηκαν επιτυχώς.', 'info')
     return redirect(url_for('main.home'))
+
+@main.route('/favorites/set_alert', methods=['POST'])
+@login_required
+def set_price_alert():
+    game_id = request.form.get('game_id')
+    target_price = request.form.get('target_price')
+    favorite_game = FavoriteGame.query.filter_by(rawg_id=str(game_id), user_id=current_user.id).first()
+
+    if favorite_game: 
+        try:
+            favorite_game.target_price = float(target_price)
+            db.session.commit()
+            flash(f'Ο στόχος τιμής για το "{favorite_game.name}" ορίστηκε στα {target_price}€.', 'success')
+        except ValueError:
+            flash('Παρακαλώ εισάγετε μια έγκυρη τιμή.', 'danger')
+    else:
+        flash('Το παιχνίδι δεν βρέθηκε στα αγαπημένα.', 'danger')
+
+    return redirect(url_for('main.game_details', game_id=game_id))
