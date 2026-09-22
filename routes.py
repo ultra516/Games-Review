@@ -3,6 +3,8 @@ import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from model import FavoriteGame, db, User
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import quote
+
 
 main = Blueprint('main', __name__)
 
@@ -45,13 +47,108 @@ def game_details(game_id):
     if current_user.is_authenticated:
         try:
             safe_id = str(game_id)  # Προσπαθούμε να μετατρέψουμε το game_id σε string
-            exists = FavoriteGame.query.filter_by(rawg_id=game_id, user_id=current_user.id).first()
+            exists = FavoriteGame.query.filter_by(rawg_id=safe_id, user_id=current_user.id).first()
             if exists:
                 is_favorite = True
         except (ValueError, TypeError):
-            is_favorite = False  # Αν το game_id δεν είναι έγκυρο ακέραιο, αγνοούμε το λάθος
-            
-    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite)
+            pass  # Αν το game_id δεν είναι έγκυρο ακέραιο, αγνοούμε το λάθος
+
+    deals = []
+    try:
+        # Αρχικοποιούμε τη μεταβλητή αμέσως για να υπάρχει ΠΑΝΤΑ στη μνήμη
+       
+        game_name = game_data.get('name')
+
+        if game_name:
+            # Αφαιρούμε τα σύμβολα (όπως :, -, !) που μπερδεύουν το CheapShark
+            clean_name = game_name.replace(':', '').replace('-', ' ').replace('!', '')  
+            # Αφαιρούμε τυχόν διπλά κενά διαστήματα που δημιουργήθηκαν
+            clean_name = " ".join(clean_name.split())
+
+            # Κωδικοποίηση του ονόματος για το URL
+            safe_game_name = quote(clean_name)  
+
+             # ΟΡΙΖΟΥΜΕ ΤΟ CUSTOM USER-AGENT ΟΠΩΣ ΖΗΤΑΕΙ ΤΟ CHEAPSHARK DOCUMENTATION
+            headers = {
+                'User-Agent': 'GamesReviewHub/1.0 (contact@gamesreviewhub.com)'
+            }
+
+            # Ψάχνουμε το παιχνίδι στο CheapShark με βάση το όνομά του
+            search_res= requests.get(f'https://www.cheapshark.com/api/1.0/games?title={safe_game_name}&limit=1', headers=headers, timeout=3)
+            search_data = search_res.json()
+
+            #Αν δεν βρει τίποτα με ολόκληρο το όνομα, δοκιμάζει με τις 3 πρώτες λέξεις
+            if not search_data or len(search_data) == 0:
+                words = clean_name.split()
+                if len(words) > 3:
+                    short_name = " ".join(words[:3])
+                    search_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?title={quote(short_name)}&limit=1', headers=headers, timeout=3)
+                    search_data = search_res.json()
+                    print("--- CHEAPSHARK DEBUG START ---")
+                    print(f"Cleaned Title: {clean_name}")
+                    print(f"API Response: {search_data}")
+
+            # Ελέγχουμε με ασφάλεια αν η λίστα έχει στοιχεία πριν διαβάσουμε τη θέση [0]
+            if search_data and isinstance(search_data, list) and len(search_data) > 0:
+                cheapshark_game_id = search_data[0].get('gameID')
+
+                if cheapshark_game_id:
+                    # Ζητάμε όλες τις live προσφορές και τα stores για αυτό το ID
+                    prices_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?id={cheapshark_game_id}', headers=headers, timeout=3)
+                    prices_data = prices_res.json()
+                    deals = prices_data.get('deals', [])
+
+    except Exception as e:
+        print(f"CheapShark Error: {e}")
+        deals = [] # Αν πέσει το API, η σελίδα θα συνεχίσει να ανοίγει κανονικά    
+
+        
+    # ΛΕΞΙΚΟ ΚΑΤΑΣΤΗΜΑΤΩΝ (ΚΑΛΥΠΤΕΙ ΟΛΟ ΤΟ CHEAPSHARK API)
+    store_names = {
+        "1": "Steam",
+        "2": "GamersGate",
+        "3": "GreenManGaming",
+        "4": "Amazon",
+        "5": "GameStop",
+        "6": "Direct2Drive",
+        "7": "GOG",
+        "8": "Origin",
+        "9": "Get Games",
+        "10": "Shiny Loot",
+        "11": "Epic Games Store",
+        "12": "IndieGameStand",
+        "13": "Digital Download",
+        "14": "Bundle Stars",
+        "15": "SilaGames",
+        "16": "Squirt創意遊戲",
+        "17": "Playfield",
+        "18": "Imperial Games",
+        "19": "WinGameStore",
+        "20": "Funstock Digital",
+        "21": "GameBillet",
+        "22": "Voidu",
+        "23": "Humble Store",
+        "24": "MacGameStore",
+        "25": "Fanatical",
+        "26": "Gamesrocket",
+        "27": "Gamesplanet",
+        "28": "Xsolla Store",
+        "29": "IndieGala",
+        "30": "Blizzard Shop",
+        "31": "AllYouPlay",
+        "32": "DLGamer",
+        "33": "Noctre",
+        "34": "Nintendo eShop",
+        "35": "Origin / EA App"
+    }
+
+
+   
+
+   
+    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite, deals=deals, store_names=store_names)
+
+    
 
 @main.route('/favorite/add', methods=['POST'])
 def add_favorite():

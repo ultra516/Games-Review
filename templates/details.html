@@ -68,6 +68,62 @@
             </div>
         </div>
 
+        <!-- 💸 ΠΙΝΑΚΑΣ LIVE ΤΙΜΩΝ & ΠΡΟΣΦΟΡΩΝ (CHEAPSHARK API) -->
+        <div class="deals-container shadow">
+            <h3>💸 Live Προσφορές & Τιμές (PC)</h3>
+            
+            {% if deals %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover deals-table-box">
+                        <thead>
+                            <tr class="deals-header-row">
+                                <th>Κατάστημα</th>
+                                <th>Τρέχουσα Τιμή</th>
+                                <th>Αρχική Τιμή</th>
+                                <th>Έκπτωση</th>
+                                <th>Σύνδεσμος</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deal in deals[:5] %} <!-- Εμφανίζουμε τις 5 καλύτερες προσφορές -->
+                                <tr>
+                                    
+                                    <td class="deal-store-name">
+                                        
+                                        <!-- ΕΠΙΣΗΜΟ ΛΟΓΟΤΥΠΟ ΚΑΤΑΣΤΗΜΑΤΟΣ ΑΠΟ ΤΟ CHEAPSHARK API -->
+                                        <img src="https://www.cheapshark.com/img/stores/icons/{{ (deal.storeID|int - 1)|string }}.png" alt="Store Logo" class="store-logo-img" onerror="this.src='https://www.cheapshark.com/img/stores/icons/0.png';">
+                                            
+                                        
+                                        {% if deal.storeID in store_names %}
+                                            {{ store_names[deal.storeID] }}
+                                        {% else %}
+                                            Κατάστημα #{{ deal.storeID }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="deal-current-price">{{ deal.price }}$</td>
+                                    <td class="deal-retail-price">{{ deal.retailPrice }}$</td>
+                                    <td>
+                                        <span class="badge bg-danger deal-savings-badge">
+                                            -{{ deal.savings|float|round|int }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <!-- Το link ανακατεύθυνσης του CheapShark που σε πάει κατευθείαν στο deal -->
+                                        <a href="https://cheapshark.com/redirect?dealID={{ deal.dealID }}" target="_blank" class="btn btn-sm btn-deal-buy">🛒</a>
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="no-deals-text">Δεν βρέθηκαν live προσφορές για αυτό το παιχνίδι αυτή τη στιγμή.</p>
+            {% endif %}
+        </div>
+
+
         <!-- Αναλυτική Περιγραφή -->
         <section class="game-description-box">
             <h2>Σχετικά με το παιχνίδι</h2>

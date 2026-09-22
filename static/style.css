@@ -564,3 +564,81 @@ header h1 {
     padding: 5px 0;
     text-decoration: none !important;
 }
+
+/* 14. ΠΙΝΑΚΑΣ Live ΤΙΜΩΝ (CHEAPSHARK DEALS TABLE) */
+.deals-container {
+    margin-top: 40px;
+    background-color: #1a1c1e;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid #00ff88; /* Πράσινο gaming περίγραμμα */
+}
+
+.deals-container h3 {
+    color: #00ff88;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.deals-table-box {
+    margin-bottom: 0;
+    background-color: #1a1c1e;
+}
+
+.deals-header-row {
+    color: #ffcc00; /* Κίτρινα γράμματα για την κεφαλίδα του πίνακα */
+}
+
+.deal-store-name {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.deal-current-price {
+    color: #00ff88;
+    font-weight: bold;
+}
+
+.deal-retail-price {
+    text-decoration: line-through;
+    color: #737380;
+}
+
+.deal-savings-badge {
+    font-size: 0.95rem;
+    padding: 6px 10px;
+}
+
+.btn-deal-buy {
+    background-color: transparent !important; /* Διάφανο φόντο */
+    color: #737380 !important; /* Διακριτικό γκρι χρώμα για το καλάθι, για να μην «χτυπάει» */
+    border: none !important; /* Εξαφανίζει ΕΝΤΕΛΩΣ το περίγραμμα */
+    padding: 0 !important; /* Αφαιρεί το εσωτερικό κενό για να μην σχηματίζεται τετράγωνο */
+    font-size: 1.3rem; /* Μεγαλώνουμε ελαφρώς το καλάθι αφού είναι σκέτο */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-block;
+}
+
+.btn-deal-buy:hover {
+    background-color: transparent !important; /* Παραμένει διάφανο στο hover */
+    color: #00ff88 !important; /* Το καλάθι ανάβει με το gaming πράσινο χρώμα */
+    transform: scale(1.15); /* Μικρό, smooth μεγέθυνση του εικονιδίου στο hover */
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.6); /* Neon λάμψη πάνω στο ίδιο το καλάθι */
+}
+
+
+.no-deals-text {
+    color: #737380;
+    margin-bottom: 0;
+    font-style: italic;
+}
+
+/* 15. ΕΙΚΟΝΙΔΙΑ ΚΑΤΑΣΤΗΜΑΤΩΝ (STORE LOGOS) */
+.store-logo-img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: middle;
+    border-radius: 4px;
+}
