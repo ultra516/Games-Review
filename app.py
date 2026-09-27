@@ -4,8 +4,19 @@ from flask import Flask
 from flask_login import LoginManager
 from model import User, db  # Κρατάμε το δικό σου όνομα αρχείου όπως είναι!
 from flask_migrate import Migrate
+from flask_mail import Mail, Message 
 
 app = Flask(__name__)
+
+app.config['MAIL_SERVER'] = '://gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'mygamesreviewhub@gmail.com'
+app.config['MAIL_PASSWORD'] = 'lenahirphjxbvjbk'  # <-- Χωρίς κενά ανάμεσα στα γράμματα
+app.config['MAIL_DEFAULT_SENDER'] = 'mygamesreviewhub@gmail.com'
+
+mail = Mail(app)
+
 migrate = Migrate(app, db)
 
 app.config['SECRET_KEY'] = 'your-secret-key'  # Προσθέστε ένα secret key
@@ -41,4 +52,4 @@ if __name__ == '__main__':
         
     # Παίρνει τη θύρα που του δίνει το Render, αλλιώς τοπικά κρατάει την 8080
     port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host='192.168.2.6', port=8080, debug=True)

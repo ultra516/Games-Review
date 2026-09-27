@@ -267,3 +267,77 @@ def set_price_alert():
         flash('Το παιχνίδι δεν βρέθηκε στα αγαπημένα.', 'danger')
 
     return redirect(url_for('main.game_details', game_id=game_id))
+
+@main.route('/cron/check_prices')
+def check_prices_and_send_emails():
+    print("\n--- 🚨 CRON START: ΞΕΚΙΝΑΕΙ Ο ΕΛΕΓΧΟΣ ΤΙΜΩΝ 🚨 ---")
+    games_with_alerts = FavoriteGame.query.filter(FavoriteGame.target_price.isnot(None)).all()
+    print(f"Βρέθηκαν {len(games_with_alerts)} παιχνίδια με ορισμένο Price Alert στη βάση.")
+    emails_sent = 0
+
+    headers = {
+        'User-Agent': 'GamesReviewHub/1.0 (contact@gamesreviewhub.com)'
+    }
+
+    for fav_game in games_with_alerts:
+        user = User.query.get(fav_game.user_id)
+        if not user or not user.email:
+            print(f"❌ Σφάλμα: Δεν βρέθηκε χρήστης ή email για το user_id: {fav_game.user_id}")
+            continue
+
+        try:
+            clean_name = fav_game.name.replace(':', '').replace('-', ' ').replace('!', '')
+            clean_name = " ".join(clean_name.split())
+            safe_name = quote(clean_name)
+
+            search_res = requests.get(f'https://cheapshark.com/api/1.0/games?title={safe_name}&limit=1', headers=headers, timeout=3)
+            search_data = search_res.json()
+
+            if search_data and isinstance(search_data, list) and len(search_data) > 0:
+                print(f"❌ Το CheapShark δεν βρήκε κανένα παιχνίδι με το όνομα: {clean_name}")
+            cheapshark_game_id = search_data[0].get('gameID')
+            print(f"CheapShark Game ID found: {cheapshark_game_id}")    
+
+            if cheapshark_game_id:
+                # Ζητάμε τις live προσφορές για αυτό το ID
+                prices_res = requests.get(f'https://cheapshark.com/api/1.0/games?id={cheapshark_game_id}', headers=headers, timeout=3)
+                prices_data = prices_res.json()
+
+                # 🔍 ΠΡΟΣΩΡΙΝΟ PRINT ΓΙΑ ΝΑ ΔΟΥΜΕ ΤΗ ΜΟΡΦΗ ΤΩΝ ΔΕΔΟΜΕΝΩΝ
+                # print(f"DEBUG - TYPE OF PRICES_DATA: {type(prices_data)} | CONTENT: {str(prices_data)[:200]}")
+
+                deals = prices_data.get('deals', []) if isinstance(prices_data, dict) else prices_data
+
+               
+
+                if deals and len(deals) > 0:
+                    # Η καλύτερη live τιμή
+                    current_lowest_price = float(deals[0]['price'])  # Αν δεν υπάρχει τιμή, βάζουμε ένα πολύ μεγάλο νούμερο για να μην στείλει email
+                    print(f"Live Lowest Price on Market: {current_lowest_price}$")
+
+                    # Έλεγχος αν η τιμή έπεσε στο όριο του χρήστη
+                    if current_lowest_price <= fav_game.target_price:
+                        print("🎯 Η τιμή είναι χαμηλότερη! Προετοιμασία αποστολής email...")
+                        from app import mail  
+                        from flask_mail import Message
+                            
+                        msg = Message(
+                            subject=f"🚨 Πτώση Τιμής: Το {fav_game.name} είναι σε προσφορά!",
+                            recipients=[user.email],
+                            body=f"Γεια σου {user.username}!\n\n"
+                                 f"Ευχάριστα νέα! Το παιχνίδι '{fav_game.name}' που έχεις στα αγαπημένα σου "
+                                 f"έπεσε στα {current_lowest_price}$, δηλαδή κάτω από το όριο των {fav_game.target_price}$ που είχες ορίσει!\n\n"
+                                 f"Μπορείς να δεις όλες τις live προσφορές εδώ: http://192.168.2{fav_game.rawg_id}\n\n"
+                                 f"Καλό gaming,\nGamesReviewHub Team"
+                        )
+
+                        mail.send(msg)
+                        emails_sent += 1
+                    else:
+                        print("⏳ Η live τιμή δεν έχει πέσει ακόμα κάτω από το όριο του χρήστη.")
+
+        except Exception as e:
+            print(f"Error checking price for {fav_game.name}: {e}")
+
+    print("\n--- 🏁 CRON END: Ο ΕΛΕΓΧΟΣ ΟΛΟΚΛΗΡΩΘΗΚΕ 🏁 ---\n")
+    return f"🚀 Ο έλεγχος ολοκληρώθηκε! Στάλθηκαν {emails_sent} ειδοποιήσεις μέσω email."    
