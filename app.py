@@ -52,4 +52,4 @@ if __name__ == '__main__':
         
     # Παίρνει τη θύρα που του δίνει το Render, αλλιώς τοπικά κρατάει την 8080
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='192.168.2.6', port=8080, debug=True)
+    app.run(host="0.0.0.0", port=port)
