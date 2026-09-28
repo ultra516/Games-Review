@@ -326,18 +326,20 @@ def check_prices_and_send_emails():
                             
                         msg = Message(
                             subject=f"🚨 Πτώση Τιμής: Το {fav_game.name} είναι σε προσφορά!",
+                            sender="mygamesreviewhub@gmail.com",
                             recipients=[user.email],
-                            body=f"Γεια σου {user.username}!\n\n"
-                                 f"Ευχάριστα νέα! Το παιχνίδι '{fav_game.name}' που έχεις στα αγαπημένα σου "
-                                 f"έπεσε στα {current_lowest_price}$, δηλαδή κάτω από το όριο των {fav_game.target_price}$ που είχες ορίσει!\n\n"
-                                 f"Μπορείς να δεις όλες τις live προσφορές εδώ: http://192.168.2{fav_game.rawg_id}\n\n"
-                                 f"Καλό gaming,\nGamesReviewHub Team"
                         )
 
+                        msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€, κάτω από το όριο των {fav_game.target_price}€ που είχες ορίσει!\n\nΔες το live εδώ: https://onrender.com{fav_game.game_id}"   
+                        print("Προσπάθεια σύνδεσης με τον SMTP server της Google...", flush=True)
                         mail.send(msg)
+                        print("ΤΟ EMAIL ΣΤΑΛΘΗΚΕ ΕΠΙΤΥΧΩΣ ΑΠΟ ΤΗΝ PYTHON!", flush=True)
+                        
                         emails_sent += 1
+                    
                     else:
-                        print("⏳ Η live τιμή δεν έχει πέσει ακόμα κάτω από το όριο του χρήστη.")
+                        
+                        print("Η live τιμή δεν έχει πέσει ακόμα κάτω από το όριο του χρήστη.")
 
         except Exception as e:
             print(f"Error checking price for {fav_game.name}: {e}")
