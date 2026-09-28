@@ -270,7 +270,8 @@ def set_price_alert():
 
 @main.route('/cron/check_prices')
 def check_prices_and_send_emails():
-    print("\n--- 🚨 CRON START: ΞΕΚΙΝΑΕΙ Ο ΕΛΕΓΧΟΣ ΤΙΜΩΝ 🚨 ---")
+    print("\n--- 🚨 CRON START: ΞΕΚΙΝΑΕΙ Ο ΕΛΕΓΧΟΣ ΤΙΜΩΝ 🚨 ---", flush=True)
+    
     games_with_alerts = FavoriteGame.query.filter(FavoriteGame.target_price.isnot(None)).all()
     print(f"Βρέθηκαν {len(games_with_alerts)} παιχνίδια με ορισμένο Price Alert στη βάση.")
     emails_sent = 0
@@ -311,13 +312,15 @@ def check_prices_and_send_emails():
                
 
                 if deals and len(deals) > 0:
+                    price_in_usd = float(deals[0]['price'])  # Παίρνουμε την τιμή σε USD
                     # Η καλύτερη live τιμή
-                    current_lowest_price = float(deals[0]['price'])  # Αν δεν υπάρχει τιμή, βάζουμε ένα πολύ μεγάλο νούμερο για να μην στείλει email
-                    print(f"Live Lowest Price on Market: {current_lowest_price}$")
+                    current_lowest_price = round(price_in_usd * 0.90, 2)  # Προσθέτουμε ένα 10% για πιθανό conversion fee και στρογγυλοποιούμε στα 2 δεκαδικά
+                    
+                    print(f"Live Price: {price_in_usd}$ | Μετατροπή σε Ευρώ: {current_lowest_price}€", flush=True)
 
                     # Έλεγχος αν η τιμή έπεσε στο όριο του χρήστη
                     if current_lowest_price <= fav_game.target_price:
-                        print("🎯 Η τιμή είναι χαμηλότερη! Προετοιμασία αποστολής email...")
+                        print(f"🚨 ALERT TRIGGERED! Η τιμή {current_lowest_price}€ είναι μικρότερη από το όριο {fav_game.target_price}€.", flush=True)
                         from app import mail  
                         from flask_mail import Message
                             
