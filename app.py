@@ -13,7 +13,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = 'mygamesreviewhub@gmail.com'
-app.config['MAIL_PASSWORD'] = 'lenahirphjxbvjbk'  # <-- Χωρίς κενά ανάμεσα στα γράμματα
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = 'mygamesreviewhub@gmail.com'
 
 mail = Mail(app)
