@@ -296,50 +296,50 @@ def check_prices_and_send_emails():
 
             if search_data and isinstance(search_data, list) and len(search_data) > 0:
                 print(f"❌ Το CheapShark δεν βρήκε κανένα παιχνίδι με το όνομα: {clean_name}")
-            cheapshark_game_id = search_data[0].get('gameID')
-            print(f"CheapShark Game ID found: {cheapshark_game_id}")    
+                cheapshark_game_id = search_data[0].get('gameID')
+                print(f"CheapShark Game ID found: {cheapshark_game_id}", flush=True)    
 
-            if cheapshark_game_id:
-                # Ζητάμε τις live προσφορές για αυτό το ID
-                prices_res = requests.get(f'https://cheapshark.com/api/1.0/games?id={cheapshark_game_id}', headers=headers, timeout=3)
-                prices_data = prices_res.json()
+                if cheapshark_game_id:
+                    # Ζητάμε τις live προσφορές για αυτό το ID
+                    prices_res = requests.get(f'https://cheapshark.com/api/1.0/games?id={cheapshark_game_id}', headers=headers, timeout=3)
+                    prices_data = prices_res.json()
 
-                # 🔍 ΠΡΟΣΩΡΙΝΟ PRINT ΓΙΑ ΝΑ ΔΟΥΜΕ ΤΗ ΜΟΡΦΗ ΤΩΝ ΔΕΔΟΜΕΝΩΝ
-                # print(f"DEBUG - TYPE OF PRICES_DATA: {type(prices_data)} | CONTENT: {str(prices_data)[:200]}")
+                    # 🔍 ΠΡΟΣΩΡΙΝΟ PRINT ΓΙΑ ΝΑ ΔΟΥΜΕ ΤΗ ΜΟΡΦΗ ΤΩΝ ΔΕΔΟΜΕΝΩΝ
+                    # print(f"DEBUG - TYPE OF PRICES_DATA: {type(prices_data)} | CONTENT: {str(prices_data)[:200]}")
 
-                deals = prices_data.get('deals', []) if isinstance(prices_data, dict) else prices_data
+                    deals = prices_data.get('deals', []) if isinstance(prices_data, dict) else prices_data
 
                
 
-                if deals and len(deals) > 0:
-                    price_in_usd = float(deals[0]['price'])  # Παίρνουμε την τιμή σε USD
-                    # Η καλύτερη live τιμή
-                    current_lowest_price = round(price_in_usd * 0.90, 2)  # Προσθέτουμε ένα 10% για πιθανό conversion fee και στρογγυλοποιούμε στα 2 δεκαδικά
+                    if deals and len(deals) > 0:
+                        price_in_usd = float(deals[0]['price'])  # Παίρνουμε την τιμή σε USD
+                        # Η καλύτερη live τιμή
+                        current_lowest_price = round(price_in_usd * 0.90, 2)  # Προσθέτουμε ένα 10% για πιθανό conversion fee και στρογγυλοποιούμε στα 2 δεκαδικά
                     
-                    print(f"Live Price: {price_in_usd}$ | Μετατροπή σε Ευρώ: {current_lowest_price}€", flush=True)
+                        print(f"Live Price: {price_in_usd}$ | Μετατροπή σε Ευρώ: {current_lowest_price}€", flush=True)
 
-                    # Έλεγχος αν η τιμή έπεσε στο όριο του χρήστη
-                    if current_lowest_price <= fav_game.target_price:
-                        print(f"🚨 ALERT TRIGGERED! Η τιμή {current_lowest_price}€ είναι μικρότερη από το όριο {fav_game.target_price}€.", flush=True)
-                        from app import mail  
-                        from flask_mail import Message
+                        # Έλεγχος αν η τιμή έπεσε στο όριο του χρήστη
+                        if current_lowest_price <= fav_game.target_price:
+                            print(f"🚨 ALERT TRIGGERED! Η τιμή {current_lowest_price}€ είναι μικρότερη από το όριο {fav_game.target_price}€.", flush=True)
+                            from app import mail  
+                            from flask_mail import Message
                             
-                        msg = Message(
-                            subject=f"🚨 Πτώση Τιμής: Το {fav_game.name} είναι σε προσφορά!",
-                            sender="mygamesreviewhub@gmail.com",
-                            recipients=[user.email],
-                        )
+                            msg = Message(
+                                subject=f"🚨 Πτώση Τιμής: Το {fav_game.name} είναι σε προσφορά!",
+                                sender="mygamesreviewhub@gmail.com",
+                                recipients=[user.email],
+                            )
 
-                        msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€, κάτω από το όριο των {fav_game.target_price}€ που είχες ορίσει!\n\nΔες το live εδώ: https://onrender.com{fav_game.game_id}"   
-                        print("Προσπάθεια σύνδεσης με τον SMTP server της Google...", flush=True)
-                        mail.send(msg)
-                        print("ΤΟ EMAIL ΣΤΑΛΘΗΚΕ ΕΠΙΤΥΧΩΣ ΑΠΟ ΤΗΝ PYTHON!", flush=True)
+                            msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€, κάτω από το όριο των {fav_game.target_price}€ που είχες ορίσει!\n\nΔες το live εδώ: https://onrender.com{fav_game.game_id}"   
+                            print("Προσπάθεια σύνδεσης με τον SMTP server της Google...", flush=True)
+                            mail.send(msg)
+                            print("ΤΟ EMAIL ΣΤΑΛΘΗΚΕ ΕΠΙΤΥΧΩΣ ΑΠΟ ΤΗΝ PYTHON!", flush=True)
                         
-                        emails_sent += 1
+                            emails_sent += 1
                     
-                    else:
+            else:
                         
-                        print("Η live τιμή δεν έχει πέσει ακόμα κάτω από το όριο του χρήστη.")
+                print("Η live τιμή δεν έχει πέσει ακόμα κάτω από το όριο του χρήστη.")
 
         except Exception as e:
             print(f"Error checking price for {fav_game.name}: {e}")
