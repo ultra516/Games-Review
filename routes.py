@@ -333,6 +333,9 @@ def check_prices_and_send_emails():
                             msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€, κάτω από το όριο των {fav_game.target_price}€ που είχες ορίσει!\n\nΔες το live εδώ: https://my-games-review.onrender.com{fav_game.id}"   
                             print("Προσπάθεια σύνδεσης με τον SMTP server της Google...", flush=True)
                             mail.send(msg)
+
+                            import time
+                            time.sleep(2)  # Δίνουμε 2 δευτερόλεπτα live χρόνο στο Render να ολοκληρώσει την αποστολή!
                             print("ΤΟ EMAIL ΣΤΑΛΘΗΚΕ ΕΠΙΤΥΧΩΣ ΑΠΟ ΤΗΝ PYTHON!", flush=True)
                         
                             emails_sent += 1
