@@ -1,6 +1,8 @@
+import threading
+
 from flask_login import login_user, logout_user, login_required, current_user
 import requests
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
 from model import FavoriteGame, db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import quote
@@ -344,6 +346,8 @@ def check_prices_and_send_emails():
 
                             # Ξεκινάμε το background thread και απελευθερώνουμε τη Flask αμέσως!
                             from flask import current_app
+
+                            real_app = current_app._get_current_object()  # Παίρνουμε το πραγματικό αντικείμενο της εφαρμογής
                             ctx = current_app.app_context()
                             thr = threading.Thread(target=send_async_email, args=[ctx, msg])
                             thr.start()
