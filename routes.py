@@ -334,7 +334,7 @@ def check_prices_and_send_emails():
                             msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€!\n\nΔες το live εδώ: https://my-games-review.onrender.com/game/{fav_game.id}"   
                             
                             def send_async_email(app_context, email_msg):
-                                with app_context():
+                                with app_context:
                                     try:
                                         print("✉️ [Background] Προσπάθεια σύνδεσης με τη Google...", flush=True)
                                         mail.send(email_msg)
