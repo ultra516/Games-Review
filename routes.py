@@ -323,6 +323,7 @@ def check_prices_and_send_emails():
                             print(f"🚨 ALERT TRIGGERED! Η τιμή {current_lowest_price}€ είναι μικρότερη από το όριο {fav_game.target_price}€.", flush=True)
                             from app import mail  
                             from flask_mail import Message
+                            import threading  # Εισαγωγή της βιβλιοθήκης για background threads
                             
                             msg = Message(
                                 subject=f"🚨 Πτώση Τιμής: Το {fav_game.name} είναι σε προσφορά!",
@@ -331,15 +332,24 @@ def check_prices_and_send_emails():
                             )
 
                             msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€!\n\nΔες το live εδώ: https://my-games-review.onrender.com/game/{fav_game.id}"   
-                            print("Προσπάθεια σύνδεσης με τον SMTP server της Google...", flush=True)
-                            mail.send(msg)
+                            
+                            def send_async_email(app_context, email_msg):
+                                with app_context():
+                                    try:
+                                        print("✉️ [Background] Προσπάθεια σύνδεσης με τη Google...", flush=True)
+                                        mail.send(email_msg)
+                                        print("✅ [Background] ΤΟ EMAIL ΣΤΑΛΘΗΚΕ ΕΠΙΤΥΧΩΣ!", flush=True)
+                                    except Exception as e:
+                                        print(f"❌ [Background] Σφάλμα SMTP: {e}", flush=True)
 
-                            import time
-                            time.sleep(2)  # Δίνουμε 2 δευτερόλεπτα live χρόνο στο Render να ολοκληρώσει την αποστολή!
-                            print("ΤΟ EMAIL ΣΤΑΛΘΗΚΕ ΕΠΙΤΥΧΩΣ ΑΠΟ ΤΗΝ PYTHON!", flush=True)
+                            # Ξεκινάμε το background thread και απελευθερώνουμε τη Flask αμέσως!
+                            from flask import current_app
+                            ctx = current_app.app_context()
+                            thr = threading.Thread(target=send_async_email, args=[ctx, msg])
+                            thr.start()
                         
+                            print("Το email ανατέθηκε στο παρασκήνιο. Απάντηση ακαριαία στο Cron-Job!", flush=True)
                             emails_sent += 1
-                    
             else:
                         
                 print("Η live τιμή δεν έχει πέσει ακόμα κάτω από το όριο του χρήστη.")
