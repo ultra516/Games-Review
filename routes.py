@@ -333,7 +333,7 @@ def check_prices_and_send_emails():
                                 recipients=[user.email],
                             )
 
-                            msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€!\n\nΔες το live εδώ: https://my-games-review.onrender.com/game/{fav_game.id}"   
+                            msg.body = f"Γεια σου!\n\nΗ τιμή για το παιχνίδι '{fav_game.name}' έπεσε στα {current_lowest_price}€!\n\nΔες το live εδώ: https://my-games-review.onrender.com/game/{fav_game.rawg_id}"   
                             
                             print("✉️ Προσπάθεια σύνδεσης με τον SMTP server της Google...", flush=True)
                             mail.send(msg)
