@@ -1,8 +1,13 @@
 import sys
 import os
-import pg8000.dbapi
 
-sys.modules['psycopg2'] = pg8000.dbapi
+# Χρησιμοποιεί το pg8000 τοπικά στο laptop, αλλά το προσπερνάει στο Render
+try:
+    import pg8000.dbapi
+    sys.modules['psycopg2'] = pg8000.dbapi
+    print("Local environment detected: Using pg8000 driver.", flush=True)
+except ImportError:
+    print("Production enviroment detected: Using native psycopg2 driver.", flush=True)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv_path = os.path.join(basedir, '.env')
