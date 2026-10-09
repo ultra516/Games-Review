@@ -1,4 +1,14 @@
+import sys
 import os
+import pg8000.dbapi
+
+sys.modules['psycopg2'] = pg8000.dbapi
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv_path = os.path.join(basedir, '.env')
+
+from dotenv import load_dotenv
+load_dotenv(load_dotenv_path)
 
 from flask import Flask
 from flask_login import LoginManager
@@ -20,6 +30,18 @@ mail = Mail(app)
 
 migrate = Migrate(app, db)
 
+# Αυτόματη μετατροπή του driver σε pg8000 για να παρακαμφθεί το App Control των Windows
+raw_db_url = os.environ.get('DATABASE_URL')
+if raw_db_url:
+    if raw_db_url and raw_db_url.startswith('postgresql://'):
+        raw_db_url = raw_db_url.replace('postgresql://', 'postgresql+pg8000://', 1)
+    elif raw_db_url and raw_db_url.startswith('postgresql+psycopg2://'):
+        raw_db_url = raw_db_url.replace('postgresql+psycopg2://', 'postgresql+pg8000://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = raw_db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 app.config['SECRET_KEY'] = 'your-secret-key'  # Προσθέστε ένα secret key
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -31,13 +53,13 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Ρυθμίσεις Βάσης Δεδομένων
-database_url = os.environ.get('DATABASE_URL', 'postgresql://postgres.hhelzbmfquwexrrickiq:ultrastudent516%40d@aws-1-eu-west-1.pooler.supabase.com:6543/postgres')
+#database_url = os.environ.get('DATABASE_URL', 'postgresql://postgres.hhelzbmfquwexrrickiq:ultrastudent516%40d@aws-1-eu-west-1.pooler.supabase.com:6543/postgres')
 
-if database_url and database_url.startswith("postgres://"):
+#if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 # Αρχικοποίηση της βάσης
