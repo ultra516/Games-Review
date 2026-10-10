@@ -59,6 +59,7 @@ def game_details(game_id):
             pass  # Αν το game_id δεν είναι έγκυρο ακέραιο, αγνοούμε το λάθος
 
     deals = []
+    store_info = {}
     try:
         # Αρχικοποιούμε τη μεταβλητή αμέσως για να υπάρχει ΠΑΝΤΑ στη μνήμη
        
@@ -103,55 +104,19 @@ def game_details(game_id):
                     prices_data = prices_res.json()
                     deals = prices_data.get('deals', [])
 
+                    # 2. LIVE FETCH ΤΩΝ STORES ΜΕΣΑ ΣΤΟ ΙΔΙΟ ΑΣΦΑΛΕΣ REQUEST ΜΕ HEADERS
+                    stores_res = requests.get('https://www.cheapshark.com/api/1.0/stores', headers=headers, timeout=3)
+                    if stores_res.status_code == 200:
+                        stores_data = stores_res.json()
+                        store_info = {str(s['storeID']): {'name': s['storeName'], 'icon': s['images']['icon']} for s in stores_data}
+
     except Exception as e:
         print(f"CheapShark Error: {e}")
         deals = [] # Αν πέσει το API, η σελίδα θα συνεχίσει να ανοίγει κανονικά    
 
         
-    # ΛΕΞΙΚΟ ΚΑΤΑΣΤΗΜΑΤΩΝ (ΚΑΛΥΠΤΕΙ ΟΛΟ ΤΟ CHEAPSHARK API)
-    store_names = {
-        "1": "Steam",
-        "2": "GamersGate",
-        "3": "GreenManGaming",
-        "4": "Amazon",
-        "5": "GameStop",
-        "6": "Direct2Drive",
-        "7": "GOG",
-        "8": "Origin",
-        "9": "Get Games",
-        "10": "Shiny Loot",
-        "11": "Epic Games Store",
-        "12": "IndieGameStand",
-        "13": "Digital Download",
-        "14": "Bundle Stars",
-        "15": "SilaGames",
-        "16": "Squirt創意遊戲",
-        "17": "Playfield",
-        "18": "Imperial Games",
-        "19": "WinGameStore",
-        "20": "Funstock Digital",
-        "21": "GameBillet",
-        "22": "Voidu",
-        "23": "Humble Store",
-        "24": "MacGameStore",
-        "25": "Fanatical",
-        "26": "Gamesrocket",
-        "27": "Gamesplanet",
-        "28": "Xsolla Store",
-        "29": "IndieGala",
-        "30": "Blizzard Shop",
-        "31": "AllYouPlay",
-        "32": "DLGamer",
-        "33": "Noctre",
-        "34": "Nintendo eShop",
-        "35": "Origin / EA App"
-    }
-
-
-   
-
-   
-    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite, deals=deals, store_names=store_names, current_alert_price=current_alert_price)
+     
+    return render_template('details.html', game=game_data, screenshots=screenshots, is_favorite=is_favorite, deals=deals, store_info=store_info, current_alert_price=current_alert_price)
 
     
 

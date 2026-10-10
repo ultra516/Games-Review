@@ -123,13 +123,11 @@
                                 <tr>
                                     
                                     <td class="deal-store-name">
-                                        
-                                        <!-- ΕΠΙΣΗΜΟ ΛΟΓΟΤΥΠΟ ΚΑΤΑΣΤΗΜΑΤΟΣ ΑΠΟ ΤΟ CHEAPSHARK API -->
-                                        <img src="https://www.cheapshark.com/img/stores/icons/{{ (deal.storeID|int - 1)|string }}.png" alt="Store Logo" class="store-logo-img" onerror="this.src='https://www.cheapshark.com/img/stores/icons/0.png';">
-                                            
-                                        
-                                        {% if deal.storeID in store_names %}
-                                            {{ store_names[deal.storeID] }}
+                                        {% if deal.storeID|string in store_info %}
+                                            <!-- ΕΠΙΣΗΜΟ ΛΟΓΟΤΥΠΟ ΚΑΤΑΣΤΗΜΑΤΟΣ ΑΠΟ ΤΟ CHEAPSHARK API -->
+                                            <img src="https://www.cheapshark.com{{ store_info[deal.storeID|string]['icon']  }}" alt="Store Logo" class="store-logo-img" onerror="this.src='https://www.cheapshark.com/img/stores/icons/0.png';">
+                                            <!-- LIVE ΟΝΟΜΑ ΚΑΤΑΣΤΗΜΑΤΟΣ -->
+                                            {{ store_info[deal.storeID|string]['name'] }}
                                         {% else %}
                                             Κατάστημα #{{ deal.storeID }}
                                         {% endif %}
