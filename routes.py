@@ -94,6 +94,21 @@ def game_details(game_id):
                     print(f"Cleaned Title: {clean_name}")
                     print(f"API Response: {search_data}")
 
+            # Αν αποτύχει, δοκιμάζουμε με τις 2 πρώτες λέξεις (π.χ. Counter Strike)
+            if not search_data or len(search_data) == 0:
+                words = clean_name.split()
+                if len(words) > 2:
+                    short_name_2 = " ".join(words[:2])
+                    search_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?title={quote(short_name)}&limit=1', headers=headers, timeout=3)
+                    search_data = search_res.json()
+
+            # ΦΙΛΤΡΑΡΙΣΜΑ ΑΠΟΤΕΛΕΣΜΑΤΩΝ
+            cheapshark_game_id = None
+            if search_data and isinstance(search_data, list) and len(search_data) > 0:
+                # Ταξινομούμε ώστε το παιχνίδι με το πιο σύντομο/ακριβές όνομα να πάει πρώτο
+                search_data.sort(key=lambda x: len(x.get('external', '')))
+                cheapshark_game_id = search_data[0].get('gameID')
+
             # Ελέγχουμε με ασφάλεια αν η λίστα έχει στοιχεία πριν διαβάσουμε τη θέση [0]
             if search_data and isinstance(search_data, list) and len(search_data) > 0:
                 cheapshark_game_id = search_data[0].get('gameID')
