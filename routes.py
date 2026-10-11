@@ -79,8 +79,8 @@ def game_details(game_id):
                 'User-Agent': 'GamesReviewHub/1.0 (contact@gamesreviewhub.com)'
             }
 
-            # Ψάχνουμε το παιχνίδι στο CheapShark με βάση το όνομά του
-            search_res= requests.get(f'https://www.cheapshark.com/api/1.0/games?title={safe_game_name}&limit=1', headers=headers, timeout=3)
+            # Ψάχνουμε το παιχνίδι στο CheapShark με βάση το όνομά του. Zητάμε έως 3 αποτελέσματα (διαφορετικές εκδόσεις/Editions) για να τις ενώσουμε
+            search_res= requests.get(f'https://www.cheapshark.com/api/1.0/games?title={safe_game_name}&limit=3', headers=headers, timeout=3)
             search_data = search_res.json()
 
             #Αν δεν βρει τίποτα με ολόκληρο το όνομα, δοκιμάζει με τις 3 πρώτες λέξεις
@@ -90,43 +90,43 @@ def game_details(game_id):
                     short_name = " ".join(words[:3])
                     search_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?title={quote(short_name)}&limit=1', headers=headers, timeout=3)
                     search_data = search_res.json()
-                    print("--- CHEAPSHARK DEBUG START ---")
-                    print(f"Cleaned Title: {clean_name}")
-                    print(f"API Response: {search_data}")
+                    
+            # COMBINE LOGIC: Μαζεύουμε τις προσφορές από ΟΛΕΣ τις έγκυρες εκδόσεις που επιστράφηκαν
+            combined_deals = []
+            seen_stores = set() # Για να μην έχουμε διπλότυπα από το ίδιο κατάστημα
+            
+            if search_data and isinstance(search_data, list):
+                for game_entry in search_data[:3]: # Παίρνουμε τις 3 πιο σχετικές εκδόσεις
+                    shark_id = game_entry.get('gameID')
 
-            # Αν αποτύχει, δοκιμάζουμε με τις 2 πρώτες λέξεις (π.χ. Counter Strike)
-            if not search_data or len(search_data) == 0:
-                words = clean_name.split()
-                if len(words) > 2:
-                    short_name_2 = " ".join(words[:2])
-                    search_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?title={quote(short_name)}&limit=1', headers=headers, timeout=3)
-                    search_data = search_res.json()
+                    if shark_id:
+                        # Τραβάμε τις τιμές για αυτή την έκδοση
+                        prices_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?id={shark_id}', headers=headers, timeout=3)
+                        prices_data = prices_res.json()
+                        game_deals = prices_data.get('deals', [])
 
-            # ΦΙΛΤΡΑΡΙΣΜΑ ΑΠΟΤΕΛΕΣΜΑΤΩΝ
-            cheapshark_game_id = None
-            if search_data and isinstance(search_data, list) and len(search_data) > 0:
-                # Ταξινομούμε ώστε το παιχνίδι με το πιο σύντομο/ακριβές όνομα να πάει πρώτο
-                search_data.sort(key=lambda x: len(x.get('external', '')))
-                cheapshark_game_id = search_data[0].get('gameID')
+                    # Φιλτράρουμε ώστε να κρατάμε μόνο μία (την καλύτερη) τιμή ανά κατάστημα
+                        for deal in game_deals:
+                            store_id = deal.get('storeID')
+                            if store_id not in seen_stores:
+                                seen_stores.add(store_id)
+                                combined_deals.append(deal)
+                    
+                    
+            # ΤΑΞΙΝΟΜΗΣΗ: Βάζει τις προσφορές στη σειρά από τη ΦΘΗΝΟΤΕΡΗ στην ΑΚΡΙΒΟΤΕΡΗ!
+            combined_deals.sort(key=lambda x: float(x.get('price', 0)))
 
-            # Ελέγχουμε με ασφάλεια αν η λίστα έχει στοιχεία πριν διαβάσουμε τη θέση [0]
-            if search_data and isinstance(search_data, list) and len(search_data) > 0:
-                cheapshark_game_id = search_data[0].get('gameID')
+            # Κλειδώνουμε τις ενωμένες προσφορές
+            deals = combined_deals
 
-                if cheapshark_game_id:
-                    # Ζητάμε όλες τις live προσφορές και τα stores για αυτό το ID
-                    prices_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?id={cheapshark_game_id}', headers=headers, timeout=3)
-                    prices_data = prices_res.json()
-                    deals = prices_data.get('deals', [])
-
-                    # 2. LIVE FETCH ΤΩΝ STORES ΜΕΣΑ ΣΤΟ ΙΔΙΟ ΑΣΦΑΛΕΣ REQUEST ΜΕ HEADERS
-                    stores_res = requests.get('https://www.cheapshark.com/api/1.0/stores', headers=headers, timeout=3)
-                    if stores_res.status_code == 200:
-                        stores_data = stores_res.json()
-                        store_info = {str(s['storeID']): {'name': s['storeName'], 'icon': s['images']['icon']} for s in stores_data}
+            # 2. LIVE FETCH ΤΩΝ STORES ΜΕΣΑ ΣΤΟ ΙΔΙΟ ΑΣΦΑΛΕΣ REQUEST ΜΕ HEADERS
+            stores_res = requests.get('https://www.cheapshark.com/api/1.0/stores', headers=headers, timeout=3)
+            if stores_res.status_code == 200:
+                stores_data = stores_res.json()
+                store_info = {str(s['storeID']): {'name': s['storeName'], 'icon': s['images']['icon']} for s in stores_data}
 
     except Exception as e:
-        print(f"CheapShark Error: {e}")
+        print(f"CheapShark Error: {e}", flush=True)
         deals = [] # Αν πέσει το API, η σελίδα θα συνεχίσει να ανοίγει κανονικά    
 
         
@@ -153,8 +153,26 @@ def add_favorite():
         flash(f'Το παιχνίδι "{game_name}" προστέθηκε με επιτυχία στα αγαπημένα σας!', 'success')
     else:
         flash(f'Το παιχνίδι "{game_name}" υπάρχει ήδη στα αγαπημένα σας.', 'info')
-    return redirect(url_for('main.home'))
+    return redirect(url_for('main.game_details', game_id=game_id))
 
+@main.route('/remove_favorite_details', methods=['POST'])
+@login_required
+def remove_favorite_details():
+    game_id = request.form.get('game_id')
+    if game_id:
+        safe_id = str(game_id)
+        # Ψάχνουμε το παιχνίδι στη βάση για τον συγκεκριμένο χρήστη
+        fav = FavoriteGame.query.filter_by(rawg_id=safe_id, user_id=current_user.id).first()
+        if fav:
+            db.session.delete(fav)
+            db.session.commit()
+            flash('Το παιχνίδι αφαιρέθηκε επιτυχώς από τη λίστα σου!', 'success')
+        else:
+            flash('Το παιχνίδι δεν βρέθηκε στη λίστα σου.', 'error')
+    
+    # Ανακατεύθυνση πίσω στην ίδια σελίδα λεπτομερειών του παιχνιδιού
+    return redirect(url_for('main.game_details', game_id=game_id))
+    
 # 2. READ: Εμφάνιση όλων των Αγαπημένων παιχνιδιών
 @main.route('/favorites')
 def show_favorites():

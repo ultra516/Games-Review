@@ -26,8 +26,13 @@
                 </div>
             {% endif %}
         {% endwith %}
-        <!-- Κουμπί για να γυρίσει ο χρήστης πίσω -->
-        <a href="/" class="back-link">⬅ Πίσω στην Αρχική</a>
+        <!-- Κουμπιά Πλοήγησης -->
+        <div class="nav-buttons-container mb-4">
+            <a href="/" class="back-link">⬅ Πίσω στην Αρχική</a>
+            {% if current_user.is_authenticated %}
+                <a href="/favorites" class="my-list-link ms-3"> Η Λίστα μου</a>
+            {% endif %}
+        </div>
 
         <div class="game-header">
             <h1>{{ game.name }}</h1>
@@ -43,7 +48,15 @@
                     <p class="details-fav-status">
                         ✅ Αυτό το παιχνίδι είναι στη λίστα σου!
                     </p>
-
+                    
+                    <!-- ΦΟΡΜΑ ΑΦΑΙΡΕΣΗΣ ΑΠΟ ΤΗ ΛΙΣΤΑ -->
+                    <form action="{{ url_for('main.remove_favorite_details') }}" method="POST" class="details-fav-form mb-3">
+                        <input type="hidden" name="game_id" value="{{ game.id }}">
+                        <button type="submit" class="btn-danger-fav">
+                            Αφαίρεση από τη Λίστα
+                        </button>
+                    </form>
+                    
                     <!--ΦΟΡΜΑ ΟΡΙΣΜΟΥ ΕΥΡΟΥΣ ΤΙΜΗΣ (PRICE ALERT) -->
                     <div class="price-alert-box shadow-sm">
                         <form action="{{ url_for('main.set_price_alert') }}" method="POST">
