@@ -84,7 +84,7 @@ def game_details(game_id):
             }
 
             # Ψάχνουμε το παιχνίδι στο CheapShark με βάση το όνομά του. Zητάμε έως 3 αποτελέσματα (διαφορετικές εκδόσεις/Editions) για να τις ενώσουμε
-            search_res= requests.get(f'https://www.cheapshark.com/api/1.0/games?title={safe_game_name}&limit=3', headers=headers, timeout=3)
+            search_res= requests.get(f'https://www.cheapshark.com/api/1.0/games?title={safe_game_name}&limit=2', headers=headers, timeout=3)
             search_data = search_res.json()
 
             #Αν δεν βρει τίποτα με ολόκληρο το όνομα, δοκιμάζει με τις 3 πρώτες λέξεις
@@ -92,7 +92,7 @@ def game_details(game_id):
                 words = clean_name.split()
                 if len(words) > 3:
                     short_name = " ".join(words[:3])
-                    search_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?title={quote(short_name)}&limit=1', headers=headers, timeout=3)
+                    search_res = requests.get(f'https://www.cheapshark.com/api/1.0/games?title={quote(short_name)}&limit=2', headers=headers, timeout=3)
                     search_data = search_res.json()
                     
             # COMBINE LOGIC: Μαζεύουμε τις προσφορές από ΟΛΕΣ τις έγκυρες εκδόσεις που επιστράφηκαν
@@ -100,7 +100,7 @@ def game_details(game_id):
             seen_stores = set() # Για να μην έχουμε διπλότυπα από το ίδιο κατάστημα
             
             if search_data and isinstance(search_data, list):
-                for game_entry in search_data[:3]: # Παίρνουμε τις 3 πιο σχετικές εκδόσεις
+                for game_entry in search_data[:2]: # Παίρνουμε τις 2 πιο σχετικές εκδόσεις
                     shark_id = game_entry.get('gameID')
 
                     if shark_id:

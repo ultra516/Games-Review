@@ -134,32 +134,48 @@
                         <tbody>
                             {% for deal in deals[:5] %} <!-- Εμφανίζουμε τις 5 καλύτερες προσφορές -->
                                 <tr>
-                                    
-                                    <td class="deal-store-name">
-                                        {% if deal.storeID|string in store_info %}
-                                            <!-- ΕΠΙΣΗΜΟ ΛΟΓΟΤΥΠΟ ΚΑΤΑΣΤΗΜΑΤΟΣ ΑΠΟ ΤΟ CHEAPSHARK API -->
-                                            <img src="https://www.cheapshark.com{{ store_info[deal.storeID|string]['icon']  }}" alt="Store Logo" class="store-logo-img" onerror="this.src='https://www.cheapshark.com/img/stores/icons/0.png';">
-                                            <!-- LIVE ΟΝΟΜΑ ΚΑΤΑΣΤΗΜΑΤΟΣ -->
-                                            {{ store_info[deal.storeID|string]['name'] }}
-                                        {% else %}
-                                            Κατάστημα #{{ deal.storeID }}
-                                        {% endif %}
-                                    </td>
+        
+                                <!-- 1. Κατάστημα -->
+                                <td class="deal-store-name">
+                                    <span class="mobile-label">Κατάστημα:</span>
+                                    {% if deal.storeID|string in store_info %}
+                                        <!-- ΕΠΙΣΗΜΟ ΛΟΓΟΤΥΠΟ ΚΑΤΑΣΤΗΜΑΤΟΣ ΑΠΟ ΤΟ CHEAPSHARK API -->
+                                        <img src="https://www.cheapshark.com{{ store_info[deal.storeID|string]['icon'] }}" alt="Store Logo" class="store-logo-img" onerror="this.src='https://www.cheapshark.com/img/stores/icons/0.png';">
+                                        <!-- LIVE ΟΝΟΜΑ ΚΑΤΑΣΤΗΜΑΤΟΣ -->
+                                        {{ store_info[deal.storeID|string]['name'] }}
+                                    {% else %}
+                                        Κατάστημα #{{ deal.storeID }}
+                                    {% endif %}
+                                </td>
 
-                                    <td class="deal-current-price">{{ deal.price }}$</td>
-                                    <td class="deal-retail-price">{{ deal.retailPrice }}$</td>
-                                    <td>
-                                        <span class="badge bg-danger deal-savings-badge">
-                                            -{{ deal.savings|float|round|int }}%
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <!-- Το link ανακατεύθυνσης του CheapShark που σε πάει κατευθείαν στο deal -->
-                                        <a href="https://cheapshark.com/redirect?dealID={{ deal.dealID }}" target="_blank" class="btn btn-sm btn-deal-buy">🛒</a>
-
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                                <!-- 2. Τρέχουσα Τιμή -->
+                                <td class="deal-current-price">
+                                    <span class="mobile-label">Τρέχουσα Τιμή:</span>
+                                    {{ deal.price }}$
+                                </td>
+        
+                                <!-- 3. Αρχική Τιμή -->
+                                <td class="deal-retail-price">
+                                    <span class="mobile-label">Αρχική Τιμή:</span>
+                                    {{ deal.retailPrice }}$
+                                </td>
+        
+                                <!-- 4. Έκπτωση -->
+                                <td>
+                                    <span class="mobile-label">Έκπτωση:</span>
+                                    <span class="badge bg-danger deal-savings-badge">
+                                        -{{ deal.savings|float|round|int }}%
+                                    </span>
+                                </td>
+        
+                                <!-- 5. Σύνδεσμος -->
+                                <td>
+                                    <span class="mobile-label">Σύνδεσμος:</span>
+                                    <!-- Το link ανακατεύθυνσης του CheapShark που σε πάει κατευθείαν στο deal -->
+                                    <a href="https://cheapshark.com/redirect?dealID={{ deal.dealID }}" target="_blank" class="btn btn-sm btn-deal-buy">🛒</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>

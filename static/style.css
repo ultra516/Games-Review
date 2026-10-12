@@ -656,6 +656,12 @@ header h1 {
     padding: 6px 10px;
 }
 
+/* Κρύβουμε τα mobile labels στην κανονική desktop οθόνη */
+.mobile-label {
+    display: none;
+}
+
+
 /* 15. ΕΙΚΟΝΙΔΙΑ ΚΑΤΑΣΤΗΜΑΤΩΝ (STORE LOGOS) */
 .store-logo-img {
     width: 20px;
@@ -830,7 +836,7 @@ header h1 {
         margin-top: 20px;
     }
 
-    /* 🔄 Μετατροπή του πίνακα σε κάρτες για να μην κρύβονται οι στήλες δεξιά! */
+    /* Μετατροπή του πίνακα σε κάρτες για να μην κρύβονται οι στήλες δεξιά! */
     .deals-table-box, 
     .deals-table-box tbody, 
     .deals-table-box tr, 
@@ -841,25 +847,45 @@ header h1 {
     }
 
     .deals-header-row {
-        display: none; /* Κρύβουμε την κεφαλίδα του πίνακα στα κινητά */
+        display: none !important; /* Κρύβουμε τελείως την παλιά οριζόντια κεφαλίδα στα κινητά */
     }
 
+    /* Μετατροπή σε ανεξάρτητες, σκοτεινές gaming κάρτες */
     .deals-table-box tr {
-        border-bottom: 1px solid #29292e;
-        padding: 12px 0;
+        border: 1px solid #29292e;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px; /* Δίνει απόσταση ανάμεσα στις κάρτες των καταστημάτων */
+        background-color: #202024; /* Σκούρο φόντο για την κάθε κάρτα */
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 10px;
     }
 
+    /* Σπρώχνει το label αριστερά και την τιμή δεξιά με Space-Between */
     .deals-table-box td {
-        padding: 4px 0 !important;
-        text-align: center !important; /* Κεντράρουμε τις τιμές και τα κουμπιά στο κινητό */
-        justify-content: center;
+        padding: 6px 0 !important;
+        display: flex !important;
+        justify-content: space-between !important; 
+        align-items: center;
+        border: none !important;
+        width: 100% !important;
+    }
+
+    /* Εμφανίζουμε τα labels μόνο στο κινητό, με όμορφο χρυσό χρώμα */
+    .mobile-label {
+        display: inline-block !important;
+        color: #ffcc00;
+        font-weight: bold;
+        font-size: 0.9rem;
     }
 
     .deal-store-name {
-        justify-content: center; /* Κεντράρουμε το λογότυπο μαζί με το όνομα */
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: flex-end; /* Στοιχίζει το όνομα του store στα δεξιά */
     }
 }
+
 
