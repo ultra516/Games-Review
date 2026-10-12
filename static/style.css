@@ -756,3 +756,14 @@ header h1 {
     transform: translateY(-2px); /* Smooth ανασήκωμα */
 }
 
+/* ΑΠΟΛΥΤΗ ΕΞΑΦΑΝΙΣΗ ΨΕΥΤΙΚΩΝ INPUTS ΣΤΟ REGISTER */
+.auth-fake-field {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    position: absolute !important;
+}
+

@@ -21,9 +21,13 @@
         {% endif %}
 
         <form action="{{ url_for('main.register') }}" method="POST">
-            <input type="text" name="username" class="auth-input" placeholder="Όνομα Χρήστη" required>
-            <input type="email" name="email" class="auth-input" placeholder="Email" required>
-            <input type="password" name="password" class="auth-input" placeholder="Κωδικός Πρόσβασης" required>
+             <!-- ΨΕΥΤΙΚΑ INPUTS ΜΕ ΚΛΑΣΗ BOOTSTRAP ΓΙΑ ΝΑ ΚΛΕΨΟΥΝ ΤΟ AUTOFILL ΤΟΥ BROWSER -->
+            <input type="text" name="fake_username" class="auth-fake-field" autocomplete="off">
+            <input type="password" name="fake_password" class="auth-fake-field" autocomplete="new-password">
+            <!-- Τα κανονικά inputs -->
+            <input type="text" name="username" class="auth-input" placeholder="Όνομα Χρήστη" autocomplete="off" required>
+            <input type="email" name="email" class="auth-input" placeholder="Email" autocomplete="off" required>
+            <input type="password" name="password" class="auth-input" placeholder="Κωδικός Πρόσβασης" autocomplete="new-password" required>
             <button type="submit" class="btn-auth-submit">Εγγραφή</button>
         </form>
         <div class="auth-link-box">

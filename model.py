@@ -9,6 +9,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False) # Όνομα χρήστη
     email = db.Column(db.String(120), unique=True, nullable=False) # Email χρήστη
     password_hash = db.Column(db.String(256), nullable=False) # Κωδικός χρήστη
+    # Πεδίο για Email Verification (ξεκινάει ως False)
+    is_verified = db.Column(db.Boolean, default=False)
 
     favorites = db.relationship('FavoriteGame', backref='user', lazy=True) # Σχέση με τα αγαπημένα παιχνίδια
     

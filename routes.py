@@ -216,6 +216,27 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
+        # ΔΗΜΙΟΥΡΓΙΑ ΑΣΦΑΛΟΥΣ TOKEN ΓΙΑ VERIFICATION (λήγει αυτόματα)
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        token = serializer.dumps(email, salt='email-confirmation-salt')
+
+        # 📡 ΣΥΝΤΑΞΗ & ΑΠΟΣΤΟΛΗ EMAIL
+        confirm_url = url_for('main.confirm_email', token=token, _external=True)
+        
+        msg = Message(
+            'Επιβεβαίωση Λογαριασμού - GamesReviewHub',
+            recipients=[email],
+            sender=current_app.config['MAIL_DEFAULT_SENDER'],
+            body=f"Καλώς ορίσατε στο GamesReviewHub, {username}!\n\nΠαρακαλούμε κάντε κλικ στον παρακάτω σύνδεσμο για να επιβεβαιώσετε το email σας και να ενεργοποιήσετε τον λογαριασμό σας:\n{confirm_url}\n\nΟ σύνδεσμος θα λήξει σε 24 ώρες."
+        )
+
+        try:
+            mail.send(msg)
+            flash('Ο λογαριασμός σας δημιουργήθηκε! Σας στείλαμε ένα email επιβεβαίωσης. Παρακαλώ ελέγξτε τα εισερχόμενά σας.', 'info')
+        except Exception as e:
+            print(f"🚨 Verification Mail Error: {e}", flush=True)
+            flash('Ο λογαριασμός δημιουργήθηκε, αλλά υπήρξε πρόβλημα με την αποστολή του email επιβεβαίωσης.', 'warning')
+        
         return redirect(url_for('main.login'))
 
     return render_template('register.html')
@@ -229,6 +250,10 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password_hash, password):
+            # ΕΛΕΓΧΟΣ VERIFICATION: Αν δεν έχει πατήσει το link, τον σταματάμε!
+            if not user.is_verified:
+                flash('Ο λογαριασμός σας δεν έχει ενεργοποιηθεί ακόμα! Παρακαλώ ελέγξτε το email σας για το link επιβεβαίωσης.', 'warning')
+                return redirect(url_for('main.login'))
             login_user(user)
             return redirect(url_for('main.home'))
         else:
@@ -305,6 +330,30 @@ def reset_password(token):
             return redirect(url_for('main.login'))
             
     return render_template('reset_password.html', token=token)
+
+# ROUTE ΠΟΥ ΕΝΕΡΓΟΠΟΙΕΙΤΑΙ ΟΤΑΝ Ο ΧΡΗΣΤΗΣ ΠΑΤΑΕΙ ΤΟ LINK ΣΤΟ EMAIL ΤΟΥ
+@main.route('/confirm_email/<token>')
+def confirm_email(token):
+    try:
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        # Το token λήγει αυτόματα μετά από 24 ώρες (86400 δευτερόλεπτα)
+        email = serializer.loads(token, salt='email-confirmation-salt', max_age=86400)
+    except Exception:
+        flash('Το link επιβεβαίωσης είναι άκυρο ή έχει λήξει!', 'danger')
+        return redirect(url_for('main.login'))
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if user.is_verified:
+            flash('Το email σας είναι ήδη επιβεβαιωμένο! Μπορείτε να συνδεθείτε.', 'info')
+        else:
+            user.is_verified = True
+            db.session.commit()
+            flash('Ο λογαριασμός σας ενεργοποιήθηκε με επιτυχία! Μπορείτε τώρα να συνδεθείτε.', 'success')
+    else:
+        flash('Ο χρήστης δεν βρέθηκε.', 'danger')
+
+    return redirect(url_for('main.login'))
 
 @main.route('/delete_account', methods=['POST'])
 @login_required
