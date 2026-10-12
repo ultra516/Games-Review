@@ -1,11 +1,15 @@
 import threading
-
-from flask_login import login_user, logout_user, login_required, current_user
-import requests
-from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
-from model import FavoriteGame, db, User
-from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import quote
+
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+from flask_mail import Message  #  Για τη σύνταξη του email
+from itsdangerous import URLSafeTimedSerializer  # 🔒 Για τα ασφαλή tokens που λήγουν
+import requests
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import mail  # Εισάγουμε το στημένο mail object
+from model import FavoriteGame, User, db
 
 
 main = Blueprint('main', __name__)
@@ -226,9 +230,11 @@ def login():
 
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            
             return redirect(url_for('main.home'))
-
+        else:
+            flash('Λάθος email ή κωδικός πρόσβασης! Δοκίμασε ξανά.', 'danger')
+            return redirect(url_for('main.login'))
+    
     return render_template('login.html')
 
 @main.route('/logout')
@@ -237,6 +243,68 @@ def logout():
     logout_user()
     flash('Έχεις αποσυνδεθεί επιτυχώς.', 'info')
     return redirect(url_for('main.home'))
+
+
+@main.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        
+        # Ακόμα κι αν ο χρήστης δεν υπάρχει, για λόγους ασφαλείας (privacy) 
+        # λέμε το ίδιο μήνυμα ώστε να μην ξέρει κάποιος hacker ποια emails είναι γραμμένα στο site!
+        if user:
+            # Δημιουργία ασφαλούς token
+            serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+            token = serializer.dumps(email, salt='password-reset-salt')
+            
+            # Σύνδεσμος που θα πατήσει ο χρήστης στο email του
+            reset_url = url_for('main.reset_password', token=token, _external=True)
+            
+            # Σύνταξη του email
+            msg = Message(
+                'Επαναφορά Κωδικού Πρόσβασης - GamesReviewHub',
+                recipients=[email],
+                sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                body=f"Γεια σας,\n\nΓια να επαναφέρετε τον κωδικό πρόσβασής σας στο GamesReviewHub, κάντε κλικ στον παρακάτω σύνδεσμο:\n{reset_url}\n\nΑν δεν ζητήσατε εσείς αυτή την αλλαγή, απλά αγνοήστε αυτό το email.\nΟ σύνδεσμος θα λήξει σε 30 λεπτά."
+            )
+            
+            try:
+                mail.send(msg)
+            except Exception as e:
+                print(f"🚨 Mail Reset Send Error: {e}", flush=True)
+
+        flash('Αν το email σας υπάρχει στη βάση μας, σας έχει σταλεί ένας σύνδεσμος επαναφοράς κωδικού.', 'info')
+        return redirect(url_for('main.login'))
+        
+    return render_template('forgot_password.html')
+
+
+@main.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        # Το token λήγει αυτόματα μετά από 30 λεπτά (1800 δευτερόλεπτα)
+        email = serializer.loads(token, salt='password-reset-salt', max_age=1800)
+    except Exception:
+        flash('Ο σύνδεσμος επαναφοράς είναι άκυρος ή έχει λήξει!', 'danger')
+        return redirect(url_for('main.login'))
+        
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            # Κρυπτογραφούμε τον νέο κωδικό και τον αποθηκεύουμε στη βάση
+            user.password_hash = generate_password_hash(new_password)
+            db.session.commit()
+            flash('Ο κωδικός πρόσβασής σας ενημερώθηκε επιτυχώς! Μπορείτε τώρα να συνδεθείτε.', 'success')
+            return redirect(url_for('main.login'))
+        else:
+            flash('Ο χρήστης δεν βρέθηκε.', 'danger')
+            return redirect(url_for('main.login'))
+            
+    return render_template('reset_password.html', token=token)
 
 @main.route('/delete_account', methods=['POST'])
 @login_required

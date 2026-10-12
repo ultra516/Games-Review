@@ -8,15 +8,38 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="auth-body bg-dark text-white">
-    <!-- 📦 ΚΕΝΤΡΙΚΟ ΚΟΥΤΙ ΣΥΝΔΕΣΗΣ -->
+    <!-- ΚΕΝΤΡΙΚΟ ΚΟΥΤΙ ΣΥΝΔΕΣΗΣ -->
     <div class="auth-container">
         <h2>Σύνδεση</h2>
+        
+        <!-- ΕΜΦΑΝΙΣΗ ΜΗΝΥΜΑΤΩΝ (FLASH) ΜΕ ΚΑΘΑΡΕΣ ΚΛΑΣΕΙΣ CSS -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages-container">
+                    {% for category, message in messages %}
+                        {% if category == 'success' %}
+                            <div class="flash-msg flash-success">{{ message }}</div>
+                        {% elif category == 'info' %}
+                            <div class="flash-msg flash-info">{{ message }}</div>
+                        {% else %}
+                            <div class="flash-msg flash-danger">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         
         <form action="{{ url_for('main.login') }}" method="POST">
             <input type="email" name="email" class="auth-input" placeholder="Email" required>
             <input type="password" name="password" class="auth-input" placeholder="Κωδικός Πρόσβασης" required>
             <button type="submit" class="btn-auth-submit">Είσοδος</button>
         </form>
+        
+          <!-- LINK ΓΙΑ ΑΝΑΚΤΗΣΗ ΚΩΔΙΚΟΥ -->
+        <div class="auth-link-box">
+            <a href="{{ url_for('main.forgot_password') }}">Ξεχάσατε τον κωδικό σας;</a>
+        </div>
         
         <div class="auth-link-box">
             Δεν έχετε λογαριασμό; <a href="{{ url_for('main.register') }}">Εγγραφείτε εδώ</a>

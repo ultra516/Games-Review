@@ -435,16 +435,48 @@ header h1 {
     z-index: 999;
 }
 
+.flash-messages-container {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
 .flash-msg {
     padding: 12px;
     border-radius: 6px;
     font-weight: bold;
+    font-size: 0.95rem;
+    text-align: center;
     margin-bottom: 10px;
 }
 
-.flash-success { background-color: #00ff88; color: #000000; border: 1px solid #00cc66; }
-.flash-warning { background-color: #ffcc00; color: #000000; border: 1px solid #ccaa00; }
-.flash-info    { background-color: #17a2b8; color: #ffffff; border: 1px solid #117a8b; }
+/* Dynamic Neon Πράσινο για Επιτυχίες (π.χ. Αλλαγή Κωδικού) */
+.flash-success {
+    color: #00ff88;
+    background-color: rgba(0, 255, 136, 0.1);
+    border: 1px solid #00ff88;
+}
+
+/* Dynamic Γαλάζιο για Ενημερώσεις (π.χ. Αποστολή Link) */
+.flash-info {
+    color: #00ffff;
+    background-color: rgba(0, 255, 255, 0.1);
+    border: 1px solid #00ffff;
+}
+
+/* Dynamic Κόκκινο για Σφάλματα (π.χ. Λάθος Password) */
+.flash-danger {
+    color: #ff3333;
+    background-color: rgba(255, 51, 51, 0.1);
+    border: 1px solid #ff3333;
+}
+
+/* Dynamic Κίτρινο (Fallback για Warnings αν χρειαστεί) */
+.flash-warning {
+    color: #ffcc00;
+    background-color: rgba(255, 204, 0, 0.1);
+    border: 1px solid #ffcc00;
+}
+
 
 /* 9. ΔΙΟΡΘΩΣΕΙΣ HEADER ΚΑΙ LINKS ΣΤΗΝ ΑΡΧΙΚΗ */
 .main-header {
