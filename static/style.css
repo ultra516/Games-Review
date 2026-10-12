@@ -767,3 +767,99 @@ header h1 {
     position: absolute !important;
 }
 
+/* ==========================================================================
+   MOBILE OPTIMIZATION ΓΙΑ ΟΛΕΣ ΤΙΣ ΣΕΛΙΔΕΣ (ΚΙΝΗΤΑ)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. ΓΕΝΙΚΑ STYLES & ΠΕΡΙΘΩΡΙΑ */
+    body {
+        padding: 10px; /* Λιγότερο κενό στις άκρες της οθόνης του κινητού */
+    }
+
+    /* 2. NAVBAR (ΜΠΑΡΑ ΣΥΝΔΕΣΗΣ) */
+    .hub-navbar {
+        flex-direction: column; /* Τα στοιχεία μπαίνουν το ένα κάτω από το άλλο */
+        padding: 15px;
+        position: relative; /* Ξεκλειδώνει το absolute για να μην καβαλάει το περιεχόμενο */
+        gap: 10px;
+    }
+
+    .navbar-right-group {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap; /* Αν δεν χωράνε τα κουμπιά, σπάνε σε επόμενη γραμμή */
+        gap: 8px;
+    }
+
+    /* 3. FLASH ΜΗΝΥΜΑΤΑ */
+    .flash-container {
+        width: 100%;
+        margin: 20px auto 10px auto; /* Μειώνουμε το margin αφού η navbar δεν είναι πλέον absolute */
+    }
+
+    /* 4. ΣΕΛΙΔΑ ΛΕΠΤΟΜΕΡΕΙΩΝ (DETAILS PAGE) */
+    .game-header h1 {
+        font-size: 1.8rem; /* Πιο μικρά γράμματα στον τίτλο για να μην σπάει άσχημα */
+        text-align: center;
+    }
+
+    .genre-tag {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    .detail-main-img {
+        min-width: 100%;
+        height: 280px; /* Μικραίνουμε την εικόνα στα κινητά για να μην πιάνει όλη την οθόνη */
+    }
+
+    .quick-facts {
+        min-width: 100%;
+        padding: 15px;
+    }
+
+    .game-description-box {
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    /* 5. ΠΙΝΑΚΑΣ Live ΤΙΜΩΝ (CHEAPSHARK DEALS) */
+    .deals-container {
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    /* 🔄 Μετατροπή του πίνακα σε κάρτες για να μην κρύβονται οι στήλες δεξιά! */
+    .deals-table-box, 
+    .deals-table-box tbody, 
+    .deals-table-box tr, 
+    .deals-table-box td, 
+    .deals-table-box th {
+        display: block;
+        width: 100%;
+    }
+
+    .deals-header-row {
+        display: none; /* Κρύβουμε την κεφαλίδα του πίνακα στα κινητά */
+    }
+
+    .deals-table-box tr {
+        border-bottom: 1px solid #29292e;
+        padding: 12px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .deals-table-box td {
+        padding: 4px 0 !important;
+        text-align: center !important; /* Κεντράρουμε τις τιμές και τα κουμπιά στο κινητό */
+        justify-content: center;
+    }
+
+    .deal-store-name {
+        justify-content: center; /* Κεντράρουμε το λογότυπο μαζί με το όνομα */
+    }
+}
+
